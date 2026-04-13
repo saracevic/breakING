@@ -182,13 +182,6 @@ input[type=range]::-webkit-slider-thumb{
 }
 .ftab:hover{color:var(--text);border-color:var(--muted);}
 .ftab.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 12px rgba(255,45,85,0.4);}
-.demo-btn{
-  font-family:var(--mono);font-size:11px;
-  padding:6px 14px;border:1px dashed var(--muted);border-radius:2px;
-  background:transparent;color:var(--muted);cursor:pointer;
-  transition:all 0.15s;margin-left:auto;
-}
-.demo-btn:hover{color:var(--accent3);border-color:var(--accent3);}
 
 /* ── MAIN STAGE ── */
 .stage{
@@ -392,69 +385,6 @@ input[type=range]::-webkit-slider-thumb{
   .ctrl-group{justify-content:space-between;}
 }
 
-/* ── ALTYAZI ARAMA PANELİ ── */
-.sub-search-panel{
-  background:var(--surface);border:1px solid var(--border);border-radius:4px;
-  padding:12px 14px;margin-bottom:12px;
-}
-.sub-search-title{
-  font-family:var(--mono);font-size:9px;color:var(--muted);
-  letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;
-}
-.sub-search-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
-.sub-search-input{
-  flex:1;min-width:180px;
-  background:var(--bg);border:1px solid var(--border);border-radius:3px;
-  color:var(--accent2);font-family:var(--mono);font-size:12px;
-  padding:6px 10px;outline:none;
-  transition:border-color 0.2s;
-}
-.sub-search-input:focus{border-color:var(--accent2);}
-.sub-search-input::placeholder{color:var(--muted);}
-.sub-search-btn{
-  font-family:var(--mono);font-size:11px;
-  padding:6px 14px;border:1px solid var(--accent2);border-radius:3px;
-  background:transparent;color:var(--accent2);cursor:pointer;
-  white-space:nowrap;transition:all 0.15s;
-}
-.sub-search-btn:hover{background:rgba(0,229,255,0.1);}
-.sub-search-btn:disabled{opacity:0.3;cursor:default;}
-.sub-results{display:flex;flex-direction:column;gap:4px;max-height:260px;overflow-y:auto;}
-.sub-result-item{
-  background:var(--card);border:1px solid var(--border);border-radius:3px;
-  padding:8px 10px;cursor:pointer;transition:border-color 0.15s;
-  display:flex;align-items:flex-start;gap:8px;
-}
-.sub-result-item:hover{border-color:var(--accent2);}
-.sub-result-item.selected-en{border-color:var(--accent2);background:rgba(0,229,255,0.06);}
-.sub-result-item.selected-tr{border-color:var(--accent);background:rgba(255,45,85,0.06);}
-.sub-result-lang{
-  font-family:var(--mono);font-size:9px;letter-spacing:1px;
-  padding:2px 5px;border-radius:2px;border:1px solid currentColor;
-  white-space:nowrap;margin-top:1px;
-}
-.sub-result-lang.en{color:var(--accent2);}
-.sub-result-lang.tr{color:var(--accent);}
-.sub-result-info{flex:1;min-width:0;}
-.sub-result-name{font-family:var(--bar);font-weight:600;font-size:12px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sub-result-meta{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;}
-.sub-load-btn{
-  font-family:var(--mono);font-size:10px;padding:3px 8px;
-  border:1px solid var(--green);border-radius:2px;
-  background:transparent;color:var(--green);cursor:pointer;
-  white-space:nowrap;transition:all 0.15s;flex-shrink:0;
-}
-.sub-load-btn:hover{background:rgba(0,255,136,0.1);}
-.sub-status{font-family:var(--mono);font-size:10px;color:var(--muted);padding:4px 0;letter-spacing:1px;}
-.sub-tabs{display:flex;gap:6px;margin-bottom:8px;}
-.sub-tab{
-  font-family:var(--mono);font-size:10px;letter-spacing:1px;padding:4px 10px;
-  border:1px solid var(--border);border-radius:2px;background:transparent;
-  color:var(--muted);cursor:pointer;transition:all 0.15s;
-}
-.sub-tab.active-en{border-color:var(--accent2);color:var(--accent2);}
-.sub-tab.active-tr{border-color:var(--accent);color:var(--accent);}
-
 </style>
 </head>
 <body>
@@ -468,7 +398,7 @@ input[type=range]::-webkit-slider-thumb{
   <div class="header">
     <div class="header-left">
       <div class="logo">BREAK<span class="red">ING</span><br><span class="cyan">BAD</span> · KAR<span class="red">AOK</span>E</div>
-      <div class="tagline">// AMBIENT MODE · TR → EN · WEB SPEECH · EN İYİ SES · KAYIT YOK</div>
+      <div class="tagline">// AMBIENT MODE · TR → EN · SRT YÜKLEYİN · BAŞLATIN</div>
     </div>
     <div class="header-right">
       <div class="bpm-display" id="bpm-disp">LOW</div>
@@ -503,7 +433,6 @@ input[type=range]::-webkit-slider-thumb{
     <button class="ftab active" id="btn-all" onclick="setFilter('all')">Tümü</button>
     <button class="ftab" id="btn-q" onclick="setFilter('q')">Sorular</button>
     <button class="ftab" id="btn-neg" onclick="setFilter('neg')">Olumsuzlar</button>
-    <button class="demo-btn" onclick="loadDemo()">▸ DEMO YÜKLE</button>
   </div>
 
   <!-- CONTROLS STRIP -->
@@ -548,7 +477,7 @@ input[type=range]::-webkit-slider-thumb{
       <span id="key-status" style="font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap">⟳ HAZIRLANIY​OR…</span>
     </div>
     <div id="kokoro-progress" style="font-family:var(--mono);font-size:9px;color:var(--accent3);letter-spacing:1px;padding:2px 0 4px;">
-      ⟶ Kokoro modeli ilk açılışta ~80MB indirilir, sonra önbelleğe alınır.
+      ⟶ EN ve TR SRT dosyalarını yükleyin, ardından BAŞLAT'a basın.
     </div>
     <div class="voice-row">
       <div class="ctrl-group" style="flex:1">
@@ -565,29 +494,6 @@ input[type=range]::-webkit-slider-thumb{
           <option value="en-female">Kadın (EN)</option>
         </select>
       </div>
-    </div>
-  </div>
-
-  <!-- ALTYAZI ARAMA PANELİ -->
-  <div class="sub-search-panel" id="sub-search-panel">
-    <div class="sub-search-title">⟶ ALTYAZI ARA · turkcealtyazi.org + opensubtitles</div>
-    <div class="sub-search-row">
-      <input type="text" class="sub-search-input" id="sub-query" placeholder="film/dizi adı yaz... (ör: Breaking Bad S01E01)">
-      <select id="sub-lang-sel" style="background:var(--bg);color:var(--accent2);border:1px solid var(--border);border-radius:3px;font-family:var(--mono);font-size:11px;padding:6px 8px;outline:none;cursor:pointer;">
-        <option value="en">🇬🇧 İngilizce</option>
-        <option value="tr">🇹🇷 Türkçe</option>
-        <option value="both">İkisi de</option>
-      </select>
-      <button class="sub-search-btn" id="sub-search-btn" onclick="searchSubtitles()">🔍 ARA</button>
-    </div>
-    <div class="sub-tabs">
-      <span style="font-family:var(--mono);font-size:9px;color:var(--muted);align-self:center;margin-right:4px;">SEÇİLEN:</span>
-      <span id="selected-en-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);">EN: —</span>
-      <span id="selected-tr-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);">TR: —</span>
-      <button class="sub-search-btn" id="sub-load-both-btn" onclick="loadSelectedSubs()" style="margin-left:auto;border-color:var(--green);color:var(--green);display:none;">⇩ İKİSİNİ YÜKle</button>
-    </div>
-    <div class="sub-results" id="sub-results">
-      <div class="sub-status" id="sub-status">⟶ Arama yapın, sonuçları seçip yükleyin.</div>
     </div>
   </div>
 
@@ -621,7 +527,7 @@ input[type=range]::-webkit-slider-thumb{
     <div class="stage-corner br" id="sc-br">READY</div>
     <div class="stage-inner">
       <div class="lang-badge tr-badge" id="lang-badge"><span class="lang-dot"></span>TR</div>
-      <div class="kline" id="kline">DEMO YÜKLE VEYA SRT DOSYASI SEÇ</div>
+      <div class="kline" id="kline">SRT DOSYASI YÜKLE VE BAŞLAT</div>
       <div class="sub-line" id="sub-line"></div>
     </div>
   </div>
@@ -1099,7 +1005,7 @@ function fullStop(){
   currentIdx=-1;
   document.getElementById('btn-play').textContent='▶ BAŞLAT';
   document.getElementById('btn-play').classList.remove('active');
-  document.getElementById('kline').textContent='DEMO YÜKLE VEYA SRT DOSYASI SEÇ';
+  document.getElementById('kline').textContent='SRT DOSYASI YÜKLE VE BAŞLAT';
   document.getElementById('sub-line').textContent='';
   document.getElementById('sub-line').className='sub-line';
   document.getElementById('lang-badge').innerHTML='<span class="lang-dot"></span>TR';
@@ -1143,223 +1049,7 @@ document.getElementById('mood-sl').addEventListener('change',function(){
   if(playing){stopAtmosphere();startAtmosphere();}
 });
 
-// ── DEMO ──────────────────────────────────────
-function loadDemo(){
-  enSubs=[
-    {sec:65,time:'00:01:05',text:"You wanna cook crystal meth? You, you and me."},
-    {sec:72,time:'00:01:12',text:"I don't know what you're talking about."},
-    {sec:78,time:'00:01:18',text:"We're going to need a lab. A proper one."},
-    {sec:85,time:'00:01:25',text:"What are you doing? Are you out of your mind?"},
-    {sec:93,time:'00:01:33',text:"I'm not in danger, Skyler. I am the danger."},
-    {sec:100,time:'00:01:40',text:"Stay out of my territory."},
-    {sec:107,time:'00:01:47',text:"It's not about the money. It's about the pride of the craft."},
-    {sec:115,time:'00:01:55',text:"Science. Yeah, Mr. White! Yeah, science!"},
-    {sec:123,time:'00:02:03',text:"I've been in the meth business for a while. Haven't you heard?"},
-    {sec:131,time:'00:02:11',text:"I did it for me. I liked it. I was good at it. And I was really alive."},
-    {sec:140,time:'00:02:20',text:"You clearly don't know who you're talking to."},
-    {sec:148,time:'00:02:28',text:"Isn't that what you wanted? Isn't it?"},
-    {sec:155,time:'00:02:35',text:"We had a good thing, you stupid son of a bitch!"},
-    {sec:162,time:'00:02:42',text:"Say my name."},
-    {sec:168,time:'00:02:48',text:"You're goddamn right."},
-  ];
-  trSubs=[
-    {sec:65,time:'00:01:05',text:"Kristal met pişirmek istiyorsun? Sen, sen ve ben."},
-    {sec:72,time:'00:01:12',text:"Ne hakkında konuştuğunu bilmiyorum."},
-    {sec:78,time:'00:01:18',text:"Bir laboratuvara ihtiyacımız olacak. Gerçek bir tane."},
-    {sec:85,time:'00:01:25',text:"Ne yapıyorsun? Aklını mı kaçırdın?"},
-    {sec:93,time:'00:01:33',text:"Ben tehlikede değilim, Skyler. Ben tehlikenin ta kendisiyim."},
-    {sec:100,time:'00:01:40',text:"Benim bölgemden uzak dur."},
-    {sec:107,time:'00:01:47',text:"Bu para meselesi değil. Bu, işin gururuyla ilgili."},
-    {sec:115,time:'00:01:55',text:"Bilim. Evet Bay White! Evet, bilim!"},
-    {sec:123,time:'00:02:03',text:"Bir süredir bu işin içindeyim. Duymadın mı?"},
-    {sec:131,time:'00:02:11',text:"Bunu kendim için yaptım. Sevdim. İyiydim bunda. Ve gerçekten... Canlıydım."},
-    {sec:140,time:'00:02:20',text:"Açıkça kiminle konuştuğunu bilmiyorsun."},
-    {sec:148,time:'00:02:28',text:"İstediğin bu değil miydi? Değil mi?"},
-    {sec:155,time:'00:02:35',text:"Güzel bir şeyimiz vardı, seni aptal herif!"},
-    {sec:162,time:'00:02:42',text:"Adımı söyle."},
-    {sec:168,time:'00:02:48',text:"Kesinlikle haklısın."},
-  ];
-  matched=matchSubs(enSubs,trSubs);
-  document.getElementById('en-name').textContent='demo_en.srt';
-  document.getElementById('tr-name').textContent='demo_tr.srt';
-  document.getElementById('deck-en').classList.add('loaded');
-  document.getElementById('deck-tr').classList.add('loaded');
-  document.getElementById('warn').style.display='none';
-  applyFilter();
-  document.getElementById('kline').textContent='▶ BAŞLAT BUTONUNA BAS';
-}
 
-// ── ALTYAZI ARAMA (OpenSubtitles API + CORS proxy) ──────────────────
-// Uses OpenSubtitles.com REST API v1 (free, no key needed for basic search)
-// CORS proxy: allorigins.win (free, open)
-
-let selectedEnSub = null; // {id, url, name}
-let selectedTrSub = null;
-
-const PROXY = 'https://api.allorigins.win/raw?url=';
-const OS_API = 'https://api.opensubtitles.com/api/v1';
-const OS_APP = 'BBKaraokeApp v1.0';
-
-function osHeaders(){
-  return {'Api-Key':'', 'Content-Type':'application/json', 'User-Agent': OS_APP};
-}
-
-async function searchSubtitles(){
-  const query = document.getElementById('sub-query').value.trim();
-  if(!query){setSubStatus('⚠ Arama terimi gir');return;}
-  const langSel = document.getElementById('sub-lang-sel').value;
-  const btn = document.getElementById('sub-search-btn');
-  btn.disabled = true;
-  setSubStatus('⟳ Aranıyor…');
-  document.getElementById('sub-results').innerHTML = '<div class="sub-status" id="sub-status">⟳ Aranıyor…</div>';
-
-  const langs = langSel === 'both' ? ['en','tr'] : [langSel];
-  let allResults = [];
-
-  try{
-    for(const lang of langs){
-      const params = new URLSearchParams({
-        query: query,
-        languages: lang,
-        type: 'all',
-        order_by: 'download_count',
-        order_direction: 'desc'
-      });
-      const url = `${OS_API}/subtitles?${params}`;
-      const proxyUrl = PROXY + encodeURIComponent(url);
-      const resp = await fetch(proxyUrl, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
-      if(!resp.ok) throw new Error('HTTP ' + resp.status);
-      const data = await resp.json();
-      if(data.data && data.data.length){
-        for(const item of data.data.slice(0,8)){
-          const attrs = item.attributes;
-          const file = attrs.files && attrs.files[0];
-          allResults.push({
-            id: item.id,
-            fileId: file ? file.file_id : null,
-            name: attrs.release || attrs.feature_details?.title || query,
-            lang: lang,
-            downloads: attrs.download_count || 0,
-            fps: attrs.fps,
-            uploader: attrs.uploader?.name || '?'
-          });
-        }
-      }
-    }
-
-    renderResults(allResults);
-  }catch(e){
-    setSubStatus('⚠ Hata: ' + e.message + ' — OpenSubtitles erişilemiyor olabilir');
-    console.error(e);
-  }
-  btn.disabled = false;
-}
-
-function renderResults(results){
-  const container = document.getElementById('sub-results');
-  if(!results.length){
-    container.innerHTML = '<div class="sub-status">Sonuç bulunamadı. Farklı anahtar kelime dene.</div>';
-    return;
-  }
-  container.innerHTML = '';
-  for(const r of results){
-    const div = document.createElement('div');
-    div.className = 'sub-result-item';
-    div.innerHTML = `
-      <span class="sub-result-lang ${r.lang}">${r.lang.toUpperCase()}</span>
-      <div class="sub-result-info">
-        <div class="sub-result-name" title="${r.name}">${r.name}</div>
-        <div class="sub-result-meta">⇩ ${r.downloads.toLocaleString()} · ${r.uploader}</div>
-      </div>
-      <button class="sub-load-btn" onclick="selectAndDownload('${r.id}','${r.fileId}','${r.lang}',this,\`${r.name.replace(/`/g,"'")}\`)">SEÇ</button>
-    `;
-    container.appendChild(div);
-  }
-  setSubStatus(`${results.length} sonuç — bir EN ve bir TR seç, sonra İKİSİNİ YÜKLE`);
-}
-
-async function selectAndDownload(id, fileId, lang, btn, name){
-  btn.textContent = '⟳';
-  btn.disabled = true;
-  try{
-    // Request download link from OpenSubtitles
-    const dlUrl = `${OS_API}/download`;
-    const proxyUrl = PROXY + encodeURIComponent(dlUrl);
-    // allorigins doesn't support POST well, use alternative
-    // Fallback: direct fetch with no-cors won't work for POST
-    // Use cors.sh or corsproxy.io
-    const resp = await fetch('https://corsproxy.io/?' + encodeURIComponent(dlUrl), {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Api-Key':'', 'User-Agent': OS_APP},
-      body: JSON.stringify({file_id: parseInt(fileId)})
-    });
-    if(!resp.ok) throw new Error('Download link alınamadı: ' + resp.status);
-    const data = await resp.json();
-    const link = data.link;
-    if(!link) throw new Error('Link boş geldi');
-
-    // Fetch the actual SRT file
-    const srtResp = await fetch('https://corsproxy.io/?' + encodeURIComponent(link));
-    if(!srtResp.ok) throw new Error('SRT indirilemedi');
-    const srtText = await srtResp.text();
-    const parsed = parseSRT(srtText);
-
-    if(lang === 'en'){
-      enSubs = parsed;
-      selectedEnSub = {id, name};
-      document.getElementById('en-name').textContent = name.slice(0,28);
-      document.getElementById('deck-en').classList.add('loaded');
-      document.getElementById('selected-en-label').textContent = 'EN: ✓ ' + name.slice(0,20);
-      document.getElementById('selected-en-label').style.color = 'var(--accent2)';
-    } else {
-      trSubs = parsed;
-      selectedTrSub = {id, name};
-      document.getElementById('tr-name').textContent = name.slice(0,28);
-      document.getElementById('deck-tr').classList.add('loaded');
-      document.getElementById('selected-tr-label').textContent = 'TR: ✓ ' + name.slice(0,20);
-      document.getElementById('selected-tr-label').style.color = 'var(--accent)';
-    }
-
-    tryMatch();
-    btn.textContent = '✓';
-    btn.style.borderColor = 'var(--green)';
-
-    if(selectedEnSub && selectedTrSub){
-      document.getElementById('sub-load-both-btn').style.display = 'inline-block';
-    }
-    setSubStatus(`✓ ${lang.toUpperCase()} yüklendi: ${parsed.length} satır`);
-
-  }catch(e){
-    btn.textContent = '⚠';
-    btn.disabled = false;
-    setSubStatus('⚠ ' + e.message);
-    console.error(e);
-  }
-}
-
-function loadSelectedSubs(){
-  if(enSubs.length && trSubs.length){
-    tryMatch();
-    setSubStatus(`✓ Eşleştirildi — ${matched.length} satır hazır`);
-    document.getElementById('kline').textContent = '▶ BAŞLAT BUTONUNA BAS';
-  }
-}
-
-function setSubStatus(msg){
-  const el = document.getElementById('sub-status');
-  if(el) el.textContent = msg;
-  else {
-    const container = document.getElementById('sub-results');
-    const d = document.createElement('div');
-    d.className = 'sub-status'; d.id = 'sub-status'; d.textContent = msg;
-    container.prepend(d);
-  }
-}
-
-// Enter key trigger
-document.getElementById('sub-query').addEventListener('keydown', e => {
-  if(e.key === 'Enter') searchSubtitles();
-});
 
 </script>
 </body>
