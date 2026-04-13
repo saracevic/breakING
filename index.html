@@ -7,398 +7,151 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-
 :root{
-  --bg:#050508;
-  --surface:#0b0b12;
-  --card:#0f0f1a;
-  --border:#1e1e32;
-  --accent:#ff2d55;
-  --accent2:#00e5ff;
-  --accent3:#ffd600;
-  --green:#00ff88;
-  --purple:#bf5fff;
-  --text:#f0f0f8;
-  --muted:#484868;
-  --bebas:'Bebas Neue',cursive;
-  --bar:'Barlow Condensed',sans-serif;
+  --bg:#050508;--surface:#0b0b12;--card:#0f0f1a;--border:#1e1e32;
+  --accent:#ff2d55;--accent2:#00e5ff;--accent3:#ffd600;
+  --green:#00ff88;--purple:#bf5fff;--text:#f0f0f8;--muted:#484868;
+  --bebas:'Bebas Neue',cursive;--bar:'Barlow Condensed',sans-serif;
   --mono:'Share Tech Mono',monospace;
 }
-
 html,body{min-height:100vh;overflow-x:hidden;}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:var(--bar);
-}
-
-/* ── SCANLINE OVERLAY ── */
+body{background:var(--bg);color:var(--text);font-family:var(--bar);}
 body::before{
-  content:'';
-  position:fixed;inset:0;
+  content:'';position:fixed;inset:0;
   background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);
   pointer-events:none;z-index:9999;
 }
-
-/* ── GLOW BG ── */
-.glow-bg{
-  position:fixed;inset:0;overflow:hidden;z-index:0;
-  pointer-events:none;
-}
-.glow-bg span{
-  position:absolute;
-  border-radius:50%;
-  filter:blur(80px);
-  opacity:0.12;
-  animation:drift 12s ease-in-out infinite alternate;
-}
+.glow-bg{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none;}
+.glow-bg span{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.12;animation:drift 12s ease-in-out infinite alternate;}
 .glow-bg span:nth-child(1){width:500px;height:500px;background:var(--accent);top:-100px;left:-100px;animation-duration:14s;}
 .glow-bg span:nth-child(2){width:400px;height:400px;background:var(--accent2);bottom:-80px;right:-80px;animation-duration:11s;animation-delay:-5s;}
 .glow-bg span:nth-child(3){width:300px;height:300px;background:var(--purple);top:40%;left:50%;transform:translate(-50%,-50%);animation-duration:9s;animation-delay:-3s;}
 @keyframes drift{from{transform:translate(0,0) scale(1);}to{transform:translate(40px,30px) scale(1.15);}}
-
-/* ── MAIN LAYOUT ── */
-.app{
-  position:relative;z-index:1;
-  min-height:100vh;
-  display:flex;flex-direction:column;
-  max-width:900px;margin:0 auto;padding:0 16px 32px;
-}
-
-/* ── HEADER ── */
-.header{
-  padding:28px 0 20px;
-  display:flex;align-items:flex-end;justify-content:space-between;
-  border-bottom:1px solid var(--border);
-  margin-bottom:24px;
-}
-.header-left{}
-.logo{
-  font-family:var(--bebas);
-  font-size:clamp(2.8rem,7vw,5rem);
-  line-height:0.9;
-  letter-spacing:2px;
-  color:var(--text);
-}
+.app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;max-width:900px;margin:0 auto;padding:0 16px 32px;}
+.header{padding:28px 0 20px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.logo{font-family:var(--bebas);font-size:clamp(2.8rem,7vw,5rem);line-height:0.9;letter-spacing:2px;color:var(--text);}
 .logo span.red{color:var(--accent);}
 .logo span.cyan{color:var(--accent2);}
-.tagline{
-  font-family:var(--mono);
-  font-size:11px;
-  color:var(--muted);
-  letter-spacing:3px;
-  text-transform:uppercase;
-  margin-top:6px;
-}
+.tagline{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:6px;}
 .header-right{text-align:right;}
-.bpm-display{
-  font-family:var(--bebas);
-  font-size:2.8rem;
-  color:var(--accent3);
-  line-height:1;
-}
+.bpm-display{font-family:var(--bebas);font-size:2.8rem;color:var(--accent3);line-height:1;}
 .bpm-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;}
-
-/* ── DJ DECK TOP ── */
-.deck-top{
-  display:grid;grid-template-columns:1fr 1fr;gap:12px;
-  margin-bottom:16px;
-}
-.upload-deck{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:4px;
-  padding:14px 16px;
-  display:flex;align-items:center;gap:12px;
-  cursor:pointer;
-  transition:border-color 0.2s,background 0.2s;
-  position:relative;overflow:hidden;
-}
+.deck-top{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.upload-deck{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.2s,background 0.2s;position:relative;overflow:hidden;}
 .upload-deck:hover{border-color:var(--accent2);background:#0f0f1e;}
 .upload-deck input{display:none;}
-.upload-deck::before{
-  content:'';
-  position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--muted);
-  transition:background 0.2s;
-}
+.upload-deck::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--muted);transition:background 0.2s;}
 .upload-deck:hover::before{background:var(--accent2);}
 .upload-deck.loaded::before{background:var(--green);}
 .deck-flag{font-size:22px;}
-.deck-info strong{
-  font-family:var(--bar);font-weight:700;font-size:13px;
-  display:block;text-transform:uppercase;letter-spacing:1px;
-}
-.deck-info .fname{
-  font-family:var(--mono);font-size:10px;
-  color:var(--accent2);margin-top:3px;min-height:14px;
-}
-.deck-status{
-  margin-left:auto;
-  width:8px;height:8px;border-radius:50%;
-  background:var(--muted);transition:background 0.2s;
-  flex-shrink:0;
-}
+.deck-info strong{font-family:var(--bar);font-weight:700;font-size:13px;display:block;text-transform:uppercase;letter-spacing:1px;}
+.deck-info .fname{font-family:var(--mono);font-size:10px;color:var(--accent2);margin-top:3px;min-height:14px;}
+.deck-status{margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background 0.2s;flex-shrink:0;}
 .upload-deck.loaded .deck-status{background:var(--green);box-shadow:0 0 8px var(--green);}
-
-/* ── CONTROLS STRIP ── */
-.ctrl-strip{
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  margin-bottom:16px;
-}
-.ctrl-group{
-  display:flex;align-items:center;gap:6px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:4px;padding:8px 12px;
-}
+.ctrl-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.ctrl-group{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:8px 12px;}
 .ctrl-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
-input[type=range]{
-  -webkit-appearance:none;
-  height:3px;background:var(--border);
-  border-radius:2px;cursor:pointer;
-  accent-color:var(--accent2);
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:12px;height:12px;border-radius:50%;
-  background:var(--accent2);
-  border:2px solid var(--bg);
-  box-shadow:0 0 6px var(--accent2);
-}
+input[type=range]{-webkit-appearance:none;height:3px;background:var(--border);border-radius:2px;cursor:pointer;accent-color:var(--accent2);}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--accent2);border:2px solid var(--bg);box-shadow:0 0 6px var(--accent2);}
 .ctrl-val{font-family:var(--mono);font-size:11px;color:var(--accent2);min-width:32px;text-align:center;}
-
-/* ── FILTER TABS ── */
-.filter-tabs{
-  display:flex;gap:4px;flex-wrap:wrap;
-  margin-bottom:16px;align-items:center;
-}
-.ftab{
-  font-family:var(--mono);font-size:11px;letter-spacing:1px;
-  padding:6px 14px;
-  border:1px solid var(--border);border-radius:2px;
-  background:transparent;color:var(--muted);
-  cursor:pointer;text-transform:uppercase;
-  transition:all 0.15s;
-}
+.filter-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.ftab{font-family:var(--mono);font-size:11px;letter-spacing:1px;padding:6px 14px;border:1px solid var(--border);border-radius:2px;background:transparent;color:var(--muted);cursor:pointer;text-transform:uppercase;transition:all 0.15s;}
 .ftab:hover{color:var(--text);border-color:var(--muted);}
 .ftab.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 12px rgba(255,45,85,0.4);}
-
-/* ── MAIN STAGE ── */
-.stage{
-  position:relative;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:6px;
-  overflow:hidden;
-  margin-bottom:16px;
-  min-height:220px;
-}
-.stage-noise{
-  position:absolute;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events:none;opacity:0.4;
-}
-.stage-corner{
-  position:absolute;font-family:var(--mono);font-size:10px;color:var(--border);letter-spacing:1px;
-}
+.stage{position:relative;background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:16px;min-height:220px;}
+.stage-noise{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;opacity:0.4;}
+.stage-corner{position:absolute;font-family:var(--mono);font-size:10px;color:var(--border);letter-spacing:1px;}
 .stage-corner.tl{top:12px;left:14px;}
 .stage-corner.tr{top:12px;right:14px;}
 .stage-corner.bl{bottom:12px;left:14px;}
 .stage-corner.br{bottom:12px;right:14px;}
-
-.stage-inner{
-  padding:32px 32px 28px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:220px;text-align:center;
-  position:relative;z-index:1;
-}
-
-/* Lang badge */
-.lang-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;
-  padding:4px 10px;border-radius:2px;
-  border:1px solid currentColor;
-  margin-bottom:18px;
-  transition:all 0.2s;
-}
+.stage-inner{padding:32px 32px 28px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;text-align:center;position:relative;z-index:1;}
+.lang-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;padding:4px 10px;border-radius:2px;border:1px solid currentColor;margin-bottom:18px;transition:all 0.2s;}
 .lang-badge.tr-badge{color:var(--accent);border-color:var(--accent);text-shadow:0 0 8px var(--accent);}
 .lang-badge.en-badge{color:var(--accent2);border-color:var(--accent2);text-shadow:0 0 8px var(--accent2);}
 .lang-dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:blink 1s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
-
-/* Karaoke text */
-.kline{
-  font-family:var(--bebas);
-  font-size:clamp(2rem,5vw,3.2rem);
-  letter-spacing:2px;
-  line-height:1.2;
-  margin-bottom:16px;
-}
-.kline .word{
-  display:inline;
-  color:var(--muted);
-  transition:color 0.06s,text-shadow 0.06s;
-}
-.kline .word.lit{
-  color:#fff;
-  text-shadow:0 0 20px var(--accent2),0 0 40px rgba(0,229,255,0.3);
-}
+.kline{font-family:var(--bebas);font-size:clamp(2rem,5vw,3.2rem);letter-spacing:2px;line-height:1.2;margin-bottom:16px;}
+.kline .word{display:inline;color:var(--muted);transition:color 0.06s,text-shadow 0.06s;}
+.kline .word.lit{color:#fff;text-shadow:0 0 20px var(--accent2),0 0 40px rgba(0,229,255,0.3);}
 .kline .word.done{color:#2a2a42;}
-
-/* Sub line */
-.sub-line{
-  font-family:var(--bar);font-weight:300;font-size:16px;
-  color:var(--muted);letter-spacing:0.5px;
-  min-height:22px;
-  transition:color 0.3s,opacity 0.3s;opacity:0;
-}
+.sub-line{font-family:var(--bar);font-weight:300;font-size:16px;color:var(--muted);letter-spacing:0.5px;min-height:22px;transition:color 0.3s,opacity 0.3s;opacity:0;}
 .sub-line.show{color:#6868aa;opacity:1;}
-
-/* ── PROGRESS ── */
-.prog-wrap{
-  height:2px;background:var(--border);
-  margin-bottom:16px;overflow:hidden;
-}
-.prog-fill{
-  height:2px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  transition:width 0.3s;
-  box-shadow:0 0 6px var(--accent2);
-}
-
-/* ── VISUALIZER ── */
-.viz-strip{
-  display:flex;gap:3px;align-items:flex-end;
-  height:48px;
-  padding:0 2px;
-  margin-bottom:16px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:4px;
-  overflow:hidden;
-}
-.viz-bar{
-  flex:1;
-  background:var(--accent2);
-  border-radius:1px 1px 0 0;
-  min-height:2px;
-  transition:height 0.07s;
-  opacity:0.7;
-}
-
-/* ── TRANSPORT ── */
-.transport{
-  display:flex;align-items:center;gap:8px;justify-content:center;
-  flex-wrap:wrap;
-  margin-bottom:16px;
-}
-.tbtn{
-  font-family:var(--bebas);font-size:1.1rem;letter-spacing:2px;
-  padding:10px 24px;
-  border:1px solid var(--border);border-radius:3px;
-  background:var(--surface);color:var(--text);
-  cursor:pointer;
-  transition:all 0.15s;
-  min-width:60px;text-align:center;
-}
+.prog-wrap{height:2px;background:var(--border);margin-bottom:16px;overflow:hidden;}
+.prog-fill{height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 0.3s;box-shadow:0 0 6px var(--accent2);}
+.viz-strip{display:flex;gap:3px;align-items:flex-end;height:48px;padding:0 2px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.viz-bar{flex:1;background:var(--accent2);border-radius:1px 1px 0 0;min-height:2px;transition:height 0.07s;opacity:0.7;}
+.transport{display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
+.tbtn{font-family:var(--bebas);font-size:1.1rem;letter-spacing:2px;padding:10px 24px;border:1px solid var(--border);border-radius:3px;background:var(--surface);color:var(--text);cursor:pointer;transition:all 0.15s;min-width:60px;text-align:center;}
 .tbtn:hover{background:var(--card);border-color:var(--muted);}
 .tbtn:disabled{opacity:0.25;cursor:default;}
-.tbtn.play-btn{
-  background:var(--accent);border-color:var(--accent);
-  color:#fff;min-width:140px;
-  box-shadow:0 0 20px rgba(255,45,85,0.35);
-  font-size:1.3rem;
-}
+.tbtn.play-btn{background:var(--accent);border-color:var(--accent);color:#fff;min-width:140px;box-shadow:0 0 20px rgba(255,45,85,0.35);font-size:1.3rem;}
 .tbtn.play-btn:hover{background:#ff1a40;box-shadow:0 0 30px rgba(255,45,85,0.5);}
 .tbtn.play-btn.active{background:transparent;border-color:var(--accent);color:var(--accent);}
 .tbtn.stop-btn{border-color:#ff2d55;color:#ff2d55;}
 .tbtn.stop-btn:hover{background:rgba(255,45,85,0.1);}
-
-/* ── INFO ROW ── */
-.info-row{
-  display:flex;align-items:center;justify-content:space-between;
-  font-family:var(--mono);font-size:11px;color:var(--muted);
-  padding:10px 14px;
-  background:var(--surface);border:1px solid var(--border);border-radius:4px;
-  margin-bottom:16px;
-}
+.info-row{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:16px;}
 .info-counter{color:var(--accent3);}
-.info-tip{letter-spacing:1px;font-size:10px;}
-
-/* ── WARN ── */
-.warn{
-  font-family:var(--mono);font-size:11px;color:var(--accent3);
-  background:rgba(255,214,0,0.06);border:1px solid rgba(255,214,0,0.2);
-  border-radius:4px;padding:8px 14px;margin-bottom:12px;
-  display:none;letter-spacing:1px;
-}
-
-/* ── DECK LIGHTS ── */
-.deck-lights{
-  display:flex;gap:6px;justify-content:center;margin-bottom:16px;
-}
-.dlight{
-  width:8px;height:8px;border-radius:50%;
-  background:var(--border);
-  transition:background 0.08s,box-shadow 0.08s;
-}
+.warn{font-family:var(--mono);font-size:11px;color:var(--accent3);background:rgba(255,214,0,0.06);border:1px solid rgba(255,214,0,0.2);border-radius:4px;padding:8px 14px;margin-bottom:12px;display:none;letter-spacing:1px;}
+.deck-lights{display:flex;gap:6px;justify-content:center;margin-bottom:16px;}
+.dlight{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background 0.08s,box-shadow 0.08s;}
 .dlight.on-k{background:var(--accent);box-shadow:0 0 8px var(--accent);}
-.dlight.on-s{background:var(--accent3);box-shadow:0 0 8px var(--accent3);}
 .dlight.on-h{background:var(--accent2);box-shadow:0 0 8px var(--accent2);}
 .dlight.on-b{background:var(--green);box-shadow:0 0 8px var(--green);}
-
-/* ── ACTIVE GLOW ── */
-.stage.is-active{
-  border-color:rgba(0,229,255,0.3);
-  box-shadow:0 0 30px rgba(0,229,255,0.06),inset 0 0 60px rgba(0,229,255,0.02);
-}
-.stage.tr-active{
-  border-color:rgba(255,45,85,0.3);
-  box-shadow:0 0 30px rgba(255,45,85,0.06),inset 0 0 60px rgba(255,45,85,0.02);
-}
-
-/* ── STRIPE DECO ── */
+.stage.is-active{border-color:rgba(0,229,255,0.3);box-shadow:0 0 30px rgba(0,229,255,0.06),inset 0 0 60px rgba(0,229,255,0.02);}
+.stage.tr-active{border-color:rgba(255,45,85,0.3);box-shadow:0 0 30px rgba(255,45,85,0.06),inset 0 0 60px rgba(255,45,85,0.02);}
 .stripe{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--purple),var(--accent3));margin-bottom:24px;}
 
-/* ── API KEY ROW ── */
-.apikey-row{
-  background:var(--surface);border:1px solid var(--border);border-radius:4px;
-  padding:12px 14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;
+/* ElevenLabs API Key Section */
+.apikey-row{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px 16px;margin-bottom:12px;}
+.apikey-row h3{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.apikey-inner{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.api-input{
+  flex:1;min-width:200px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:3px;padding:8px 12px;
+  font-family:var(--mono);font-size:11px;color:var(--accent2);
+  outline:none;transition:border-color 0.2s;
 }
-.apikey-inner{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.voice-row{display:flex;gap:8px;flex-wrap:wrap;}
-.voice-row .ctrl-group{flex:1;min-width:180px;}
-
-/* ── TTS STATUS ── */
-.tts-status{
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--mono);font-size:10px;letter-spacing:1px;
-  padding:3px 8px;border-radius:2px;border:1px solid currentColor;
+.api-input:focus{border-color:var(--accent2);}
+.api-input::placeholder{color:var(--muted);}
+.api-btn{
+  font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  padding:8px 14px;border:1px solid var(--border);border-radius:3px;
+  background:var(--surface);color:var(--text);cursor:pointer;white-space:nowrap;
+  transition:all 0.15s;
 }
-.tts-status.loading{color:var(--accent3);}
-.tts-status.playing{color:var(--green);}
-.tts-status.error{color:var(--accent);}
-
+.api-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.api-status{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;}
+.api-status.ok{color:var(--green);}
+.api-status.err{color:var(--accent);}
+.api-status.loading{color:var(--accent3);}
+.voice-selects{display:flex;gap:8px;flex-wrap:wrap;}
+.voice-selects .ctrl-group{flex:1;min-width:180px;}
+.voice-selects select{
+  background:var(--bg);color:var(--accent2);border:none;
+  font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;
+  max-width:180px;
+}
+.free-note{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;}
+.free-note a{color:var(--accent2);text-decoration:none;}
+.free-note a:hover{text-decoration:underline;}
+select{background:var(--bg);color:var(--accent2);border:none;font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;}
 @media(max-width:600px){
   .deck-top{grid-template-columns:1fr 1fr;}
   .ctrl-strip{flex-direction:column;align-items:stretch;}
   .ctrl-group{justify-content:space-between;}
 }
-
 </style>
 </head>
 <body>
-<div class="glow-bg">
-  <span></span><span></span><span></span>
-</div>
-
+<div class="glow-bg"><span></span><span></span><span></span></div>
 <div class="app">
   <div class="stripe"></div>
-
   <div class="header">
     <div class="header-left">
       <div class="logo">BREAK<span class="red">ING</span><br><span class="cyan">BAD</span> · KAR<span class="red">AOK</span>E</div>
-      <div class="tagline">// AMBIENT MODE · TR → EN · SRT YÜKLEYİN · BAŞLATIN</div>
+      <div class="tagline">// ELEVENLABS MODE · TR → EN · SRT YÜKLEYİN · BAŞLATIN</div>
     </div>
     <div class="header-right">
       <div class="bpm-display" id="bpm-disp">LOW</div>
@@ -411,41 +164,65 @@ input[type=range]::-webkit-slider-thumb{
     <label class="upload-deck" id="deck-en">
       <input type="file" id="en-file" accept=".srt">
       <div class="deck-flag">🇬🇧</div>
-      <div class="deck-info">
-        <strong>İngilizce SRT</strong>
-        <div class="fname" id="en-name">dosya yükle</div>
-      </div>
+      <div class="deck-info"><strong>İngilizce SRT</strong><div class="fname" id="en-name">dosya yükle</div></div>
       <div class="deck-status"></div>
     </label>
     <label class="upload-deck" id="deck-tr">
       <input type="file" id="tr-file" accept=".srt">
       <div class="deck-flag">🇹🇷</div>
-      <div class="deck-info">
-        <strong>Türkçe SRT</strong>
-        <div class="fname" id="tr-name">dosya yükle</div>
-      </div>
+      <div class="deck-info"><strong>Türkçe SRT</strong><div class="fname" id="tr-name">dosya yükle</div></div>
       <div class="deck-status"></div>
     </label>
   </div>
 
-  <!-- FILTERS -->
-  <div class="filter-tabs">
-    <button class="ftab active" id="btn-all" onclick="setFilter('all')">Tümü</button>
-    <button class="ftab" id="btn-q" onclick="setFilter('q')">Sorular</button>
-    <button class="ftab" id="btn-neg" onclick="setFilter('neg')">Olumsuzlar</button>
+  <!-- ELEVENLABS API KEY -->
+  <div class="apikey-row">
+    <h3>ElevenLabs TTS — Gerçekçi Ses Motoru</h3>
+    <div class="apikey-inner">
+      <input type="password" class="api-input" id="el-apikey" placeholder="ElevenLabs API Key (sk_...)" autocomplete="off">
+      <button class="api-btn" onclick="testAPIKey()">TEST ET</button>
+      <span class="api-status" id="api-status">— KEY GEREKLİ</span>
+    </div>
+    <div class="voice-selects" id="voice-selects">
+      <div class="ctrl-group">
+        <span class="ctrl-label">TR SES</span>
+        <select id="tr-voice-el">
+          <option value="">— key gir —</option>
+        </select>
+      </div>
+      <div class="ctrl-group">
+        <span class="ctrl-label">EN SES</span>
+        <select id="en-voice-el">
+          <option value="">— key gir —</option>
+        </select>
+      </div>
+      <div class="ctrl-group">
+        <span class="ctrl-label">MODEL</span>
+        <select id="el-model">
+          <option value="eleven_multilingual_v2">Multilingual v2 (TR+EN)</option>
+          <option value="eleven_turbo_v2_5">Turbo v2.5 (Hızlı)</option>
+          <option value="eleven_monolingual_v1">Monolingual v1 (Sadece EN)</option>
+        </select>
+      </div>
+    </div>
+    <div class="free-note">
+      ✦ Ücretsiz hesap = 10.000 karakter/ay &nbsp;|&nbsp;
+      <a href="https://elevenlabs.io" target="_blank">elevenlabs.io</a>'da kayıt → API Keys → buraya yapıştır
+      &nbsp;|&nbsp; Türkçe için <b>Multilingual v2</b> zorunlu
+    </div>
   </div>
 
-  <!-- CONTROLS STRIP -->
+  <!-- CONTROLS -->
   <div class="ctrl-strip">
     <div class="ctrl-group">
       <span class="ctrl-label">TR HIZI</span>
-      <input type="range" id="tr-spd" min="0.5" max="1.4" step="0.05" value="0.85">
+      <input type="range" id="tr-spd" min="0.5" max="1.2" step="0.05" value="0.85">
       <span class="ctrl-val" id="tr-spd-v">0.9×</span>
     </div>
     <div class="ctrl-group">
       <span class="ctrl-label">EN HIZI</span>
-      <input type="range" id="en-spd" min="0.5" max="1.4" step="0.05" value="0.80">
-      <span class="ctrl-val" id="en-spd-v">0.8×</span>
+      <input type="range" id="en-spd" min="0.5" max="1.2" step="0.05" value="0.85">
+      <span class="ctrl-val" id="en-spd-v">0.9×</span>
     </div>
     <div class="ctrl-group">
       <span class="ctrl-label">ATM VOL</span>
@@ -458,8 +235,18 @@ input[type=range]::-webkit-slider-thumb{
       <span class="ctrl-val" id="pulse-v">18%</span>
     </div>
     <div class="ctrl-group">
+      <span class="ctrl-label">STABILITY</span>
+      <input type="range" id="stab-sl" min="0" max="1" step="0.05" value="0.45">
+      <span class="ctrl-val" id="stab-v">45%</span>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">SIMILARITY</span>
+      <input type="range" id="sim-sl" min="0" max="1" step="0.05" value="0.75">
+      <span class="ctrl-val" id="sim-v">75%</span>
+    </div>
+    <div class="ctrl-group">
       <span class="ctrl-label">MOOD</span>
-      <select id="mood-sl" style="background:var(--bg);color:var(--accent2);border:none;font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;">
+      <select id="mood-sl">
         <option value="dark">DARK</option>
         <option value="low">LOW</option>
         <option value="rise">RISE</option>
@@ -467,37 +254,13 @@ input[type=range]::-webkit-slider-thumb{
     </div>
   </div>
 
-  <!-- ENGINE STATUS ROW -->
-  <div class="apikey-row" id="apikey-row">
-    <div class="apikey-inner">
-      <span class="ctrl-label" style="white-space:nowrap">TTS ENGINE</span>
-      <span style="font-family:var(--mono);font-size:11px;color:var(--accent2);flex:1">
-        TR + EN → Web Speech API · Sisteminizin en iyi sesi seçilir
-      </span>
-      <span id="key-status" style="font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap">⟳ HAZIRLANIY​OR…</span>
-    </div>
-    <div id="kokoro-progress" style="font-family:var(--mono);font-size:9px;color:var(--accent3);letter-spacing:1px;padding:2px 0 4px;">
-      ⟶ EN ve TR SRT dosyalarını yükleyin, ardından BAŞLAT'a basın.
-    </div>
-    <div class="voice-row">
-      <div class="ctrl-group" style="flex:1">
-        <span class="ctrl-label">TR SES</span>
-        <select id="tr-voice" style="background:var(--bg);color:var(--accent);border:none;font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;">
-          <option value="tr-TR-male">Erkek (TR)</option>
-          <option value="tr-TR-female">Kadın (TR)</option>
-        </select>
-      </div>
-      <div class="ctrl-group" style="flex:1">
-        <span class="ctrl-label">EN SES</span>
-        <select id="en-voice" style="background:var(--bg);color:var(--accent2);border:none;font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;">
-          <option value="en-male">Erkek (EN)</option>
-          <option value="en-female">Kadın (EN)</option>
-        </select>
-      </div>
-    </div>
+  <!-- FILTER TABS -->
+  <div class="filter-tabs">
+    <button class="ftab active" id="btn-all" onclick="setFilter('all')">Tümü</button>
+    <button class="ftab" id="btn-q" onclick="setFilter('q')">Sorular</button>
+    <button class="ftab" id="btn-neg" onclick="setFilter('neg')">Olumsuzlar</button>
   </div>
 
-  <!-- WARN -->
   <div id="warn" class="warn"></div>
 
   <!-- DECK LIGHTS -->
@@ -512,22 +275,20 @@ input[type=range]::-webkit-slider-thumb{
     <div class="dlight" id="dl14"></div><div class="dlight" id="dl15"></div>
   </div>
 
-  <!-- VISUALIZER -->
+  <!-- VIZ -->
   <div class="viz-strip" id="viz-strip"></div>
-
-  <!-- PROGRESS -->
   <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
 
-  <!-- MAIN STAGE -->
+  <!-- STAGE -->
   <div class="stage" id="main-stage">
     <div class="stage-noise"></div>
     <div class="stage-corner tl" id="sc-tl">SRC</div>
     <div class="stage-corner tr" id="sc-tr">00:00:00</div>
-    <div class="stage-corner bl">KARAOKE · BB</div>
+    <div class="stage-corner bl">KARAOKE · BB · ELEVENLABS</div>
     <div class="stage-corner br" id="sc-br">READY</div>
     <div class="stage-inner">
       <div class="lang-badge tr-badge" id="lang-badge"><span class="lang-dot"></span>TR</div>
-      <div class="kline" id="kline">SRT DOSYASI YÜKLE VE BAŞLAT</div>
+      <div class="kline" id="kline">SRT DOSYASI YÜKLE · API KEY GİR · BAŞLAT</div>
       <div class="sub-line" id="sub-line"></div>
     </div>
   </div>
@@ -543,24 +304,27 @@ input[type=range]::-webkit-slider-thumb{
   <!-- INFO -->
   <div class="info-row">
     <span class="info-counter" id="counter">—</span>
-    <span class="info-tip">ÖNCE TR · SONRA EN · TIKLAYARAK NAVİGASYON</span>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;">ELEVENLABS · ÖNCE TR · SONRA EN</span>
   </div>
-
 </div>
 
 <script>
+// ── STATE ─────────────────────────────────────────────────────────────────
 let enSubs=[],trSubs=[],matched=[],filtered=[];
 let currentFilter='all';
-let currentIdx=-1, playing=false;
-let audioCtx=null, masterGain=null, beatInterval=null, vizBars=[];
-let beatStep=0;
-let dlightTimeout=null;
-let padNodes=[], pingTimer=null, vizAnimId=null, lightInterval=null;
+let currentIdx=-1,playing=false;
+let audioCtx=null,masterGain=null,padNodes=[],pingTimer=null,vizAnimId=null,lightInterval=null;
+let vizBars=[];
+// Audio cache: key = "lang:text", value = ArrayBuffer
+let audioCache = new Map();
+// Prefetch queue
+let prefetchQueue = [];
+let isPrefetching = false;
 
-// ── VIZ SETUP ─────────────────────────────
+// ── VIZ ──────────────────────────────────────────────────────────────────
 function setupViz(){
   const v=document.getElementById('viz-strip');
-  v.innerHTML=''; vizBars=[];
+  v.innerHTML='';vizBars=[];
   for(let i=0;i<48;i++){
     const b=document.createElement('div');
     b.className='viz-bar';b.style.height='2px';
@@ -569,14 +333,17 @@ function setupViz(){
 }
 setupViz();
 
-// ── AUDIO CTX ─────────────────────────────
+// ── AUDIO CTX ────────────────────────────────────────────────────────────
 function getCtx(){
   if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
   if(!masterGain){
     masterGain=audioCtx.createGain();
     const revLen=audioCtx.sampleRate*2.5;
     const revBuf=audioCtx.createBuffer(2,revLen,audioCtx.sampleRate);
-    for(let ch=0;ch<2;ch++){const d=revBuf.getChannelData(ch);for(let i=0;i<revLen;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/revLen,2.2);}
+    for(let ch=0;ch<2;ch++){
+      const d=revBuf.getChannelData(ch);
+      for(let i=0;i<revLen;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/revLen,2.2);
+    }
     const rev=audioCtx.createConvolver();rev.buffer=revBuf;
     const revG=audioCtx.createGain();revG.gain.value=0.32;
     masterGain.connect(rev);rev.connect(revG);revG.connect(audioCtx.destination);
@@ -586,27 +353,23 @@ function getCtx(){
   return audioCtx;
 }
 
-// ── MOOD DEFINITIONS ──────────────────────
+// ── MOOD / ATMOSPHERE ────────────────────────────────────────────────────
 const moods={
   dark:{freqs:[55,82.4,98,130.8,164.8],subFreq:27.5,padVol:0.06,subVol:0.10,noiseVol:0.016,label:'DARK'},
   low: {freqs:[65.4,98,123.5,130.8,196],subFreq:32.7,padVol:0.055,subVol:0.08,noiseVol:0.012,label:'LOW'},
   rise:{freqs:[87.3,130.8,174.6,196,261.6],subFreq:43.6,padVol:0.06,subVol:0.07,noiseVol:0.010,label:'RISE'}
 };
 
-// ── ATMOSPHERE ENGINE ──────────────────────
 function startAtmosphere(){
   const ctx=getCtx();
-  const moodKey=document.getElementById('mood-sl')?document.getElementById('mood-sl').value:'dark';
+  const moodKey=document.getElementById('mood-sl').value;
   const mood=moods[moodKey]||moods.dark;
   stopAtmosphere();
-
-  // Layered pad chords — 3 detuned sines per frequency
   mood.freqs.forEach((freq,i)=>{
     [-0.9,0,0.9].forEach(det=>{
       const o=ctx.createOscillator();o.type='sine';
       o.frequency.value=freq*(1+det*0.0014);
       const g=ctx.createGain();g.gain.value=mood.padVol;
-      // Slow LFO breathing
       const lfo=ctx.createOscillator();lfo.type='sine';
       lfo.frequency.value=0.04+i*0.011+Math.random()*0.025;
       const lfoG=ctx.createGain();lfoG.gain.value=mood.padVol*0.38;
@@ -616,8 +379,6 @@ function startAtmosphere(){
       padNodes.push(o,g,lfo);
     });
   });
-
-  // Sub bass with slow tremolo
   const sub=ctx.createOscillator();sub.type='sine';sub.frequency.value=mood.subFreq;
   const subG=ctx.createGain();subG.gain.value=mood.subVol;
   const subLfo=ctx.createOscillator();subLfo.type='sine';subLfo.frequency.value=0.22;
@@ -626,8 +387,6 @@ function startAtmosphere(){
   sub.connect(subG);subG.connect(masterGain);
   sub.start();subLfo.start();
   padNodes.push(sub,subLfo);
-
-  // Vinyl texture noise
   const noiseBuf=ctx.createBuffer(1,ctx.sampleRate*4,ctx.sampleRate);
   const nd=noiseBuf.getChannelData(0);
   for(let i=0;i<nd.length;i++) nd[i]=(Math.random()*2-1)*0.25;
@@ -637,10 +396,8 @@ function startAtmosphere(){
   nLoop.connect(nF);nF.connect(nG);nG.connect(masterGain);
   nLoop.start();
   padNodes.push(nLoop);
-
   schedulePing();
 }
-
 function schedulePing(){
   if(!playing) return;
   pingTimer=setTimeout(()=>{if(playing){playPing();schedulePing();}},4000+Math.random()*5500);
@@ -651,7 +408,7 @@ function playPing(){
   const freq=pfreqs[Math.floor(Math.random()*pfreqs.length)];
   const o=ctx.createOscillator();o.type='sine';o.frequency.value=freq;
   const g=ctx.createGain();
-  const pulseVol=parseFloat(document.getElementById('pulse-sl')?document.getElementById('pulse-sl').value:0.18);
+  const pulseVol=parseFloat(document.getElementById('pulse-sl').value);
   o.connect(g);g.connect(masterGain);
   const t=ctx.currentTime;
   g.gain.setValueAtTime(0,t);
@@ -659,14 +416,13 @@ function playPing(){
   g.gain.exponentialRampToValueAtTime(0.001,t+2.5);
   o.start(t);o.stop(t+2.6);
 }
-
 function stopAtmosphere(){
   padNodes.forEach(n=>{try{n.stop?n.stop():n.disconnect();}catch(e){}});
   padNodes=[];
   if(pingTimer){clearTimeout(pingTimer);pingTimer=null;}
 }
 
-// ── SMOOTH AMBIENT VIZ ──────────────────────
+// ── VIZ ANIMATION ────────────────────────────────────────────────────────
 let vizPhase=0;
 function startViz(){
   stopViz();
@@ -688,8 +444,6 @@ function stopViz(){
   if(vizAnimId){cancelAnimationFrame(vizAnimId);vizAnimId=null;}
   vizBars.forEach(b=>{b.style.height='2px';b.style.opacity='0.7';});
 }
-
-// ── GENTLE DECK LIGHTS ──────────────────────
 function startLights(){
   stopLights();let ls=0;
   lightInterval=setInterval(()=>{
@@ -705,11 +459,10 @@ function stopLights(){
   if(lightInterval){clearInterval(lightInterval);lightInterval=null;}
   document.querySelectorAll('.dlight').forEach(d=>d.className='dlight');
 }
-
 function startBeat(){startAtmosphere();startViz();startLights();}
 function stopBeat(){stopAtmosphere();stopViz();stopLights();}
 
-// ── SRT ─────────────────────────────────────
+// ── SRT PARSER ────────────────────────────────────────────────────────────
 function fixEnc(buf){
   const b=new Uint8Array(buf);
   if(b[0]===0xEF&&b[1]===0xBB&&b[2]===0xBF) return new TextDecoder('utf-8').decode(buf);
@@ -762,7 +515,6 @@ function readFile(inp,nameId,deckId,cb){
 }
 document.getElementById('en-file').addEventListener('change',function(){readFile(this,'en-name','deck-en',s=>{enSubs=s;tryMatch();});});
 document.getElementById('tr-file').addEventListener('change',function(){readFile(this,'tr-name','deck-tr',s=>{trSubs=s;tryMatch();});});
-
 function tryMatch(){
   if(enSubs.length&&trSubs.length){
     matched=matchSubs(enSubs,trSubs);
@@ -773,8 +525,6 @@ function tryMatch(){
     applyFilter();
   }
 }
-
-// ── FILTERS ──────────────────────────────────
 function setFilter(f){
   currentFilter=f;
   document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));
@@ -791,147 +541,263 @@ function applyFilter(){
   currentIdx=-1;updateUI();
 }
 
-// ── WEB SPEECH TTS (EN + TR) ─────────────────────
-// Uses best available system voices — works on file:// with zero downloads
-let ttsCache = {};
-let currentSource = null;
-let currentUtterance = null;
-let bestENVoice = null;
-let bestTRVoice = null;
+// ── ELEVENLABS API ────────────────────────────────────────────────────────
 
-function setKeyStatus(msg, col) {
-  const el = document.getElementById('key-status');
-  if (el) { el.textContent = msg; el.style.color = col || ''; }
+function getAPIKey(){
+  return document.getElementById('el-apikey').value.trim();
 }
 
-function setKokoroProgress(msg) {
-  const el = document.getElementById('kokoro-progress');
-  if (el) el.textContent = msg;
+async function testAPIKey(){
+  const key=getAPIKey();
+  if(!key){setAPIStatus('KEY GEREKLİ','');return;}
+  setAPIStatus('TEST EDİLİYOR…','loading');
+  try{
+    const r=await fetch('https://api.elevenlabs.io/v1/voices',{
+      headers:{'xi-api-key':key}
+    });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    setAPIStatus('✓ BAĞLANTI OK','ok');
+    populateVoices(data.voices||[]);
+    audioCache.clear(); // reset cache on new key
+  }catch(err){
+    setAPIStatus('✗ '+err.message,'err');
+  }
 }
 
-function pickBestVoices() {
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices.length) return;
+function setAPIStatus(msg,cls){
+  const el=document.getElementById('api-status');
+  el.textContent=msg;
+  el.className='api-status'+(cls?' '+cls:'');
+}
 
-  // Priority order for English — neural/natural voices first
-  const enPriority = [
-    'Microsoft Guy Online','Microsoft Jenny Online','Microsoft Aria Online',
-    'Microsoft Davis Online','Microsoft Andrew Online','Microsoft Brian Online',
-    'Google US English','Samantha','Alex','Daniel',
-    'en-US-Neural','en-GB-Neural'
+// Known good voices for TR and EN
+const KNOWN_TR_VOICES=[
+  {name:'Rachel (Multilingual)',id:'21m00Tcm4TlvDq8ikWAM'},
+  {name:'Matilda',id:'XrExE9yKIg1WjnnlVkGX'},
+  {name:'Charlotte',id:'XB0fDUnXU5powFXDhCwa'},
+  {name:'Sarah',id:'EXAVITQu4vr4xnSDxMaL'},
+];
+const KNOWN_EN_VOICES=[
+  {name:'Adam',id:'pNInz6obpgDQGcFmaJgB'},
+  {name:'Antoni',id:'ErXwobaYiN019PkySvjV'},
+  {name:'Arnold',id:'VR6AewLTigWG4xSOukaG'},
+  {name:'Callum',id:'N2lVS1w4EtoT3dr4eOWO'},
+  {name:'Charlie',id:'IKne3meq5aSn9XLyUdCD'},
+  {name:'Clyde',id:'2EiwWnXFnvU5JabPnv8n'},
+  {name:'Daniel',id:'onwK4e9ZLuTAKqWW03F9'},
+  {name:'Dave',id:'CYw3kZ02Hs0563khs1Fj'},
+  {name:'Ethan',id:'g5CIjZEefAph4nQFvHAz'},
+  {name:'Freya',id:'jsCqWAovK2LkecY7zXl4'},
+  {name:'George',id:'JBFqnCBsd6RMkjVDRZzb'},
+  {name:'Harry',id:'SOYHLrjzK2X1ezoPC6cr'},
+  {name:'James',id:'ZQe5CZNOzWyzPSCn5a3c'},
+  {name:'Jeremy',id:'bVMeCyTHy58xNoL34h3p'},
+  {name:'Jessie',id:'t0jbNlBVZ17f02VDIeMI'},
+  {name:'Joseph',id:'Zlb1dXrM653N07WRdFW3'},
+  {name:'Josh',id:'TxGEqnHWrfWFTfGW9XjX'},
+  {name:'Liam',id:'TX3LPaxmHKxFdv7VOQHJ'},
+  {name:'Lily',id:'pFZP5JQG7iQjIQuC4Bku'},
+  {name:'Michael',id:'flq6f7yk4E4fJM5XTYuZ'},
+  {name:'Mimi',id:'zrHiDhphv9ZnVXBqCLjz'},
+  {name:'Nicole',id:'piTKgcLEGmPE4e6mEKli'},
+  {name:'Patrick',id:'ODq5zmih8GrVes37Dizd'},
+  {name:'Rachel',id:'21m00Tcm4TlvDq8ikWAM'},
+  {name:'Ryan (Audiobook)',id:'wViXBPUzp2ZZixB1xQuM'},
+  {name:'Sam',id:'yoZ06aMxZJJ28mfd3POQ'},
+  {name:'Serena',id:'pMsXgVXv3BLzUgSXRplE'},
+  {name:'Thomas',id:'GBv7mTt0atIp3Br8iCZE'},
+];
+
+function populateVoices(apiVoices){
+  // Merge API voices with known list
+  const trSel=document.getElementById('tr-voice-el');
+  const enSel=document.getElementById('en-voice-el');
+  trSel.innerHTML='';enSel.innerHTML='';
+
+  // For TR: use multilingual voices — prefer voices that support Turkish
+  const trList=[
+    ...KNOWN_TR_VOICES,
+    ...apiVoices.filter(v=>v.fine_tuning&&v.fine_tuning.language==='tr').map(v=>({name:v.name+' (custom)',id:v.voice_id}))
   ];
-  for (const pref of enPriority) {
-    const v = voices.find(v => v.name.includes(pref) || v.voiceURI.includes(pref));
-    if (v) { bestENVoice = v; break; }
-  }
-  if (!bestENVoice) bestENVoice = voices.find(v => v.lang.startsWith('en')) || null;
+  // Deduplicate
+  const seenTR=new Set();
+  trList.forEach(v=>{
+    if(!seenTR.has(v.id)){seenTR.add(v.id);
+      const o=document.createElement('option');o.value=v.id;o.textContent=v.name;
+      trSel.appendChild(o);}
+  });
+  // Add any from API not already listed
+  apiVoices.forEach(v=>{
+    if(!seenTR.has(v.voice_id)){seenTR.add(v.voice_id);
+      const o=document.createElement('option');o.value=v.voice_id;o.textContent=v.name+' (hesabım)';
+      trSel.appendChild(o);}
+  });
+  trSel.value='21m00Tcm4TlvDq8ikWAM'; // Rachel default
 
-  // Turkish
-  const trPriority = ['Microsoft Emel','Microsoft Ahmet','Google Türkçe'];
-  for (const pref of trPriority) {
-    const v = voices.find(v => v.name.includes(pref));
-    if (v) { bestTRVoice = v; break; }
-  }
-  if (!bestTRVoice) bestTRVoice = voices.find(v => v.lang.startsWith('tr')) || null;
-
-  const enName = bestENVoice ? bestENVoice.name : 'bulunamadı';
-  const trName = bestTRVoice ? bestTRVoice.name : 'bulunamadı';
-  setKeyStatus('✓ HAZIR', 'var(--green)');
-  setKokoroProgress(`✓ EN: ${enName.slice(0,30)} | TR: ${trName.slice(0,20)}`);
+  // For EN
+  const seenEN=new Set();
+  [...KNOWN_EN_VOICES,...apiVoices.map(v=>({name:v.name,id:v.voice_id}))].forEach(v=>{
+    if(!seenEN.has(v.id)){seenEN.add(v.id);
+      const o=document.createElement('option');o.value=v.id;o.textContent=v.name;
+      enSel.appendChild(o);}
+  });
+  enSel.value='pNInz6obpgDQGcFmaJgB'; // Adam default
 }
 
-window.addEventListener('load', () => {
-  document.getElementById('en-spd-v').textContent = parseFloat(document.getElementById('en-spd').value).toFixed(1) + '×';
-  document.getElementById('tr-spd-v').textContent = parseFloat(document.getElementById('tr-spd').value).toFixed(1) + '×';
-  // Voices load async in Chrome
-  if (window.speechSynthesis.onvoiceschanged !== undefined) {
-    window.speechSynthesis.onvoiceschanged = pickBestVoices;
-  }
-  setTimeout(pickBestVoices, 500);
-});
+// Pre-populate with known voices so user can pick even before testing
+(function initVoices(){
+  const trSel=document.getElementById('tr-voice-el');
+  const enSel=document.getElementById('en-voice-el');
+  trSel.innerHTML='';enSel.innerHTML='';
+  KNOWN_TR_VOICES.forEach(v=>{const o=document.createElement('option');o.value=v.id;o.textContent=v.name;trSel.appendChild(o);});
+  KNOWN_EN_VOICES.forEach(v=>{const o=document.createElement('option');o.value=v.id;o.textContent=v.name;enSel.appendChild(o);});
+  trSel.value='21m00Tcm4TlvDq8ikWAM';
+  enSel.value='pNInz6obpgDQGcFmaJgB';
+})();
 
-function speakWithVoice(text, voice, lang, speed) {
-  return new Promise((res) => {
-    if (!playing) { res(); return; }
-    window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = lang;
-    utt.rate = Math.max(0.5, Math.min(2.0, speed));
-    utt.pitch = 1.0;
-    utt.volume = 1.0;
-    if (voice) utt.voice = voice;
-    currentUtterance = utt;
-    const words = text.split(/\s+/);
-    const wpm = lang.startsWith('tr') ? 120 : 150;
-    const estDurMs = (words.length / (wpm * speed)) * 60000;
-    animateWords(words, estDurMs, () => {});
-    utt.onend = () => { currentUtterance = null; setStageStatus('', ''); res(); };
-    utt.onerror = (e) => { currentUtterance = null; console.warn('TTS error:', e); res(); };
-    window.speechSynthesis.speak(utt);
-    // Chrome bug: long texts get cut off — keep alive
-    const keepAlive = setInterval(() => {
-      if (!window.speechSynthesis.speaking) { clearInterval(keepAlive); return; }
-      window.speechSynthesis.pause();
-      window.speechSynthesis.resume();
-    }, 10000);
-    utt.onend = () => { clearInterval(keepAlive); currentUtterance = null; setStageStatus('', ''); res(); };
-    utt.onerror = () => { clearInterval(keepAlive); currentUtterance = null; res(); };
+// ── ELEVENLABS TTS CALL ───────────────────────────────────────────────────
+async function fetchElevenLabsAudio(text, voiceId){
+  const key=getAPIKey();
+  if(!key) throw new Error('API key yok');
+  const model=document.getElementById('el-model').value;
+  const stability=parseFloat(document.getElementById('stab-sl').value);
+  const similarity=parseFloat(document.getElementById('sim-sl').value);
+
+  const body={
+    text,
+    model_id:model,
+    voice_settings:{
+      stability,
+      similarity_boost:similarity,
+      style:0.0,
+      use_speaker_boost:true
+    }
+  };
+
+  const r=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,{
+    method:'POST',
+    headers:{
+      'xi-api-key':key,
+      'Content-Type':'application/json',
+      'Accept':'audio/mpeg'
+    },
+    body:JSON.stringify(body)
+  });
+  if(!r.ok){
+    const errText=await r.text().catch(()=>'');
+    throw new Error(`ElevenLabs ${r.status}: ${errText.slice(0,80)}`);
+  }
+  return await r.arrayBuffer();
+}
+
+// ── PLAY AUDIO BUFFER VIA WEB AUDIO ──────────────────────────────────────
+let currentSource=null;
+
+function stopCurrentAudio(){
+  if(currentSource){try{currentSource.stop();}catch(e){}currentSource=null;}
+}
+
+async function playAudioBuffer(arrayBuffer){
+  return new Promise(async(res,rej)=>{
+    if(!playing){res();return;}
+    const ctx=getCtx();
+    try{
+      const decoded=await ctx.decodeAudioData(arrayBuffer.slice(0));
+      const src=ctx.createBufferSource();
+      src.buffer=decoded;
+      // Connect through a gain node for volume isolation from masterGain
+      const speechGain=ctx.createGain();
+      speechGain.gain.value=1.0;
+      src.connect(speechGain);
+      speechGain.connect(ctx.destination);
+      currentSource=src;
+      src.onended=()=>{currentSource=null;res();};
+      src.start();
+    }catch(err){rej(err);}
   });
 }
 
-function stopCurrentAudio() {
-  if (currentSource) { try { currentSource.stop(); } catch (e) {} currentSource = null; }
-  if (currentUtterance || window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
-    currentUtterance = null;
-  }
+// ── KARAOKE WORD ANIMATION ────────────────────────────────────────────────
+function buildWordSpans(text){
+  return text.split(/\s+/).map((w,i)=>`<span class="word" id="w${i}">${w}</span>`).join(' ');
 }
-
-// ── KARAOKE HIGHLIGHT ─────────────────────────
-function buildWordSpans(text) {
-  return text.split(/\s+/).map((w, i) => `<span class="word" id="w${i}">${w}</span>`).join(' ');
-}
-
-// Estimate word timing from audio duration
-function animateWords(words, durationMs, onDone) {
-  let wIdx = 0;
-  const avgMs = durationMs / words.length;
-  function tick() {
-    if (!playing) { onDone(); return; }
-    const el = document.getElementById('w' + wIdx);
-    if (el) {
-      if (wIdx > 0) { const p = document.getElementById('w' + (wIdx - 1)); if (p) { p.classList.remove('lit'); p.classList.add('done'); } }
+function animateWords(words, durationMs){
+  const avgMs=durationMs/Math.max(words.length,1);
+  let wIdx=0;
+  function tick(){
+    if(!playing) return;
+    const el=document.getElementById('w'+wIdx);
+    if(el){
+      if(wIdx>0){const p=document.getElementById('w'+(wIdx-1));if(p){p.classList.remove('lit');p.classList.add('done');}}
       el.classList.add('lit');
     }
     wIdx++;
-    if (wIdx < words.length) setTimeout(tick, avgMs);
+    if(wIdx<words.length) setTimeout(tick,avgMs);
   }
   tick();
-  setTimeout(() => {
-    for (let i = 0; i < words.length; i++) { const el = document.getElementById('w' + i); if (el) { el.classList.remove('lit'); el.classList.add('done'); } }
-    onDone();
-  }, durationMs + 80);
+  setTimeout(()=>{
+    for(let i=0;i<words.length;i++){const el=document.getElementById('w'+i);if(el){el.classList.remove('lit');el.classList.add('done');}}
+  },durationMs+100);
 }
 
-async function speakOAI(text, voice, speed, lang) {
-  if (!playing) return;
-  if (lang === 'tr') {
-    setStageStatus('▶ TR ÇALIYOR', 'var(--accent)');
-    await speakWithVoice(text, bestTRVoice, 'tr-TR', speed);
-  } else {
-    setStageStatus('▶ EN ÇALIYOR', 'var(--accent2)');
-    await speakWithVoice(text, bestENVoice, 'en-US', speed);
+// ── SPEAK WITH ELEVENLABS ────────────────────────────────────────────────
+async function speakEL(text, voiceId, speed, lang){
+  if(!playing) return;
+  setStageStatus(lang==='tr'?'▶ TR ÇALIYOR':'▶ EN ÇALIYOR', lang==='tr'?'var(--accent)':'var(--accent2)');
+  setAPIStatus(lang==='tr'?'TTS: TR…':'TTS: EN…','loading');
+
+  const cacheKey=`${voiceId}:${text}`;
+  let buf;
+  try{
+    if(audioCache.has(cacheKey)){
+      buf=audioCache.get(cacheKey);
+    } else {
+      buf=await fetchElevenLabsAudio(text, voiceId);
+      audioCache.set(cacheKey,buf);
+    }
+    setAPIStatus('✓ ÇALIYOR','ok');
+    const words=text.split(/\s+/);
+    const ctx=getCtx();
+    const decoded=await ctx.decodeAudioData(buf.slice(0));
+    const durMs=decoded.duration*1000/speed;
+    animateWords(words,durMs);
+    await playAudioBuffer(buf);
+  }catch(err){
+    setAPIStatus('✗ '+err.message.slice(0,40),'err');
+    setStageStatus('⚠ '+err.message.slice(0,30),'var(--accent)');
+    await sleep(2000);
   }
+  if(playing) setAPIStatus('✓ HAZIR','ok');
 }
 
 function setStageStatus(msg,col){
   const el=document.getElementById('sc-br');
   if(el){el.textContent=msg;el.style.color=col||'';}
 }
-
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
-// ── PLAY ROW ──────────────────────────────────
+// ── PREFETCH NEXT ROW ─────────────────────────────────────────────────────
+async function prefetchRow(i){
+  if(i<0||i>=filtered.length) return;
+  const row=filtered[i];
+  const key=getAPIKey();if(!key) return;
+  const trVoice=document.getElementById('tr-voice-el').value;
+  const enVoice=document.getElementById('en-voice-el').value;
+  const tryPrefetch=async(text,voiceId)=>{
+    if(!text||!voiceId) return;
+    const k=`${voiceId}:${text}`;
+    if(audioCache.has(k)) return;
+    try{
+      const buf=await fetchElevenLabsAudio(text,voiceId);
+      audioCache.set(k,buf);
+    }catch(e){/* silent */}
+  };
+  if(row.tr) await tryPrefetch(row.tr,trVoice);
+  await tryPrefetch(row.en,enVoice);
+}
+
+// ── PLAY ROW ─────────────────────────────────────────────────────────────
 async function playRow(i){
   if(i<0||i>=filtered.length){playing=false;stopBeat();updateUI();return;}
   currentIdx=i;updateUI();
@@ -942,51 +808,52 @@ async function playRow(i){
   const badge=document.getElementById('lang-badge');
   const scTr=document.getElementById('sc-tr');
 
-  const trVoice=document.getElementById('tr-voice').value;
-  const enVoice=document.getElementById('en-voice').value;
+  const trVoice=document.getElementById('tr-voice-el').value;
+  const enVoice=document.getElementById('en-voice-el').value;
   const trSpeed=parseFloat(document.getElementById('tr-spd').value);
   const enSpeed=parseFloat(document.getElementById('en-spd').value);
 
   scTr.textContent=row.time||'--:--:--';
   setStageStatus((i+1)+'/'+filtered.length,'');
 
-  try{
-    // ─ TR ─
-    stage.className='stage tr-active';
-    badge.innerHTML='<span class="lang-dot"></span>TR';
-    badge.className='lang-badge tr-badge';
-    kline.innerHTML=buildWordSpans(row.tr||'—');
-    subLine.className='sub-line';subLine.textContent='';
+  // ─ TR ─
+  stage.className='stage tr-active';
+  badge.innerHTML='<span class="lang-dot"></span>TR';
+  badge.className='lang-badge tr-badge';
+  kline.innerHTML=buildWordSpans(row.tr||'—');
+  subLine.className='sub-line';subLine.textContent='';
 
-    if(row.tr) await speakOAI(row.tr, trVoice, trSpeed, 'tr');
-    if(!playing) return;
-    await sleep(220);if(!playing) return;
+  if(row.tr) await speakEL(row.tr,trVoice,trSpeed,'tr');
+  if(!playing) return;
+  await sleep(200);if(!playing) return;
 
-    // ─ EN ─
-    stage.className='stage is-active';
-    badge.innerHTML='<span class="lang-dot"></span>EN';
-    badge.className='lang-badge en-badge';
-    kline.innerHTML=buildWordSpans(row.en);
-    subLine.className='sub-line show';subLine.textContent=row.tr||'';
+  // ─ EN ─
+  stage.className='stage is-active';
+  badge.innerHTML='<span class="lang-dot"></span>EN';
+  badge.className='lang-badge en-badge';
+  kline.innerHTML=buildWordSpans(row.en);
+  subLine.className='sub-line show';subLine.textContent=row.tr||'';
 
-    await speakOAI(row.en, enVoice, enSpeed, 'en');
-    if(!playing) return;
-    await sleep(280);if(!playing) return;
-
-  }catch(err){
-    setStageStatus('⚠ '+err.message,'var(--accent)');
-    await sleep(1800);if(!playing) return;
-  }
+  await speakEL(row.en,enVoice,enSpeed,'en');
+  if(!playing) return;
+  await sleep(250);if(!playing) return;
 
   stage.className='stage';
+
+  // Prefetch next row in background
+  prefetchRow(i+1).catch(()=>{});
+
   playRow(i+1);
 }
 
-// ── TRANSPORT ─────────────────────────────────
+// ── TRANSPORT ──────────────────────────────────────────────────────────────
 function togglePlay(){
   if(playing){pausePlay();return;}
-  if(!window.AudioContext&&!window.webkitAudioContext){alert('Web Audio API desteklenmiyor.');return;}
-  // No API key needed - Kokoro runs locally
+  if(!getAPIKey()){
+    document.getElementById('el-apikey').focus();
+    setAPIStatus('⚠ API KEY GEREKLİ','err');
+    return;
+  }
   getCtx().resume();
   playing=true;startBeat();
   document.getElementById('btn-play').textContent='⏸ DURAKLAT';
@@ -1005,7 +872,7 @@ function fullStop(){
   currentIdx=-1;
   document.getElementById('btn-play').textContent='▶ BAŞLAT';
   document.getElementById('btn-play').classList.remove('active');
-  document.getElementById('kline').textContent='SRT DOSYASI YÜKLE VE BAŞLAT';
+  document.getElementById('kline').textContent='SRT DOSYASI YÜKLE · API KEY GİR · BAŞLAT';
   document.getElementById('sub-line').textContent='';
   document.getElementById('sub-line').className='sub-line';
   document.getElementById('lang-badge').innerHTML='<span class="lang-dot"></span>TR';
@@ -1017,14 +884,14 @@ function fullStop(){
 function stepBy(d){
   const ni=currentIdx+d;
   if(ni<0||ni>=filtered.length) return;
-  playing=true;
-  stopCurrentAudio();
-  if(!beatInterval) startBeat();
+  if(!getAPIKey()){setAPIStatus('⚠ API KEY GEREKLİ','err');return;}
+  playing=true;stopCurrentAudio();
+  if(!padNodes.length) startBeat();
   document.getElementById('btn-play').textContent='⏸ DURAKLAT';
   document.getElementById('btn-play').classList.add('active');
+  document.getElementById('btn-stop').disabled=false;
   playRow(ni);
 }
-
 function updateUI(){
   const has=filtered.length>0;
   document.getElementById('btn-prev').disabled=currentIdx<=0;
@@ -1035,22 +902,32 @@ function updateUI(){
   document.getElementById('prog-fill').style.width=Math.round(pct)+'%';
 }
 
-// ── SLIDERS ──────────────────────────────────
-document.getElementById('tr-spd').addEventListener('input',function(){document.getElementById('tr-spd-v').textContent=parseFloat(this.value).toFixed(1)+'×';});
-document.getElementById('en-spd').addEventListener('input',function(){document.getElementById('en-spd-v').textContent=parseFloat(this.value).toFixed(1)+'×';});document.getElementById('vol-sl').addEventListener('input',function(){
+// ── SLIDERS ───────────────────────────────────────────────────────────────
+document.getElementById('tr-spd').addEventListener('input',function(){document.getElementById('tr-spd-v').textContent=parseFloat(this.value).toFixed(2)+'×';});
+document.getElementById('en-spd').addEventListener('input',function(){document.getElementById('en-spd-v').textContent=parseFloat(this.value).toFixed(2)+'×';});
+document.getElementById('vol-sl').addEventListener('input',function(){
   document.getElementById('vol-v').textContent=Math.round(this.value*100)+'%';
   if(masterGain) masterGain.gain.value=parseFloat(this.value);
 });
-document.getElementById('pulse-sl').addEventListener('input',function(){
-  document.getElementById('pulse-v').textContent=Math.round(this.value*100)+'%';
-});
+document.getElementById('pulse-sl').addEventListener('input',function(){document.getElementById('pulse-v').textContent=Math.round(this.value*100)+'%';});
+document.getElementById('stab-sl').addEventListener('input',function(){document.getElementById('stab-v').textContent=Math.round(this.value*100)+'%';audioCache.clear();});
+document.getElementById('sim-sl').addEventListener('input',function(){document.getElementById('sim-v').textContent=Math.round(this.value*100)+'%';audioCache.clear();});
 document.getElementById('mood-sl').addEventListener('change',function(){
   document.getElementById('bpm-disp').textContent=this.value.toUpperCase();
   if(playing){stopAtmosphere();startAtmosphere();}
 });
+// Voice changes clear relevant cache entries
+document.getElementById('tr-voice-el').addEventListener('change',()=>audioCache.clear());
+document.getElementById('en-voice-el').addEventListener('change',()=>audioCache.clear());
+document.getElementById('el-model').addEventListener('change',()=>audioCache.clear());
 
+window.addEventListener('load',()=>{
+  document.getElementById('en-spd-v').textContent=parseFloat(document.getElementById('en-spd').value).toFixed(2)+'×';
+  document.getElementById('tr-spd-v').textContent=parseFloat(document.getElementById('tr-spd').value).toFixed(2)+'×';
+});
 
-
+// Enter key on API key input triggers test
+document.getElementById('el-apikey').addEventListener('keydown',e=>{if(e.key==='Enter') testAPIKey();});
 </script>
 </body>
 </html>
