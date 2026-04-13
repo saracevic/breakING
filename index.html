@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BB · KARAOKE DJ</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#050508;
+  --surface:#0b0b12;
+  --card:#0f0f1a;
+  --border:#1e1e32;
+  --accent:#ff2d55;
+  --accent2:#00e5ff;
+  --accent3:#ffd600;
+  --green:#00ff88;
+  --purple:#bf5fff;
+  --text:#f0f0f8;
+  --muted:#484868;
+  --bebas:'Bebas Neue',cursive;
+  --bar:'Barlow Condensed',sans-serif;
+  --mono:'Share Tech Mono',monospace;
+}
+
+html,body{min-height:100vh;overflow-x:hidden;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--bar);
+}
+
+/* ── SCANLINE OVERLAY ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);
+  pointer-events:none;z-index:9999;
+}
+
+/* ── GLOW BG ── */
+.glow-bg{
+  position:fixed;inset:0;overflow:hidden;z-index:0;
+  pointer-events:none;
+}
+.glow-bg span{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  opacity:0.12;
+  animation:drift 12s ease-in-out infinite alternate;
+}
+.glow-bg span:nth-child(1){width:500px;height:500px;background:var(--accent);top:-100px;left:-100px;animation-duration:14s;}
+.glow-bg span:nth-child(2){width:400px;height:400px;background:var(--accent2);bottom:-80px;right:-80px;animation-duration:11s;animation-delay:-5s;}
+.glow-bg span:nth-child(3){width:300px;height:300px;background:var(--purple);top:40%;left:50%;transform:translate(-50%,-50%);animation-duration:9s;animation-delay:-3s;}
+@keyframes drift{from{transform:translate(0,0) scale(1);}to{transform:translate(40px,30px) scale(1.15);}}
+
+/* ── MAIN LAYOUT ── */
+.app{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  max-width:900px;margin:0 auto;padding:0 16px 32px;
+}
+
+/* ── HEADER ── */
+.header{
+  padding:28px 0 20px;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  margin-bottom:24px;
+}
+.header-left{}
+.logo{
+  font-family:var(--bebas);
+  font-size:clamp(2.8rem,7vw,5rem);
+  line-height:0.9;
+  letter-spacing:2px;
+  color:var(--text);
+}
+.logo span.red{color:var(--accent);}
+.logo span.cyan{color:var(--accent2);}
+.tagline{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-top:6px;
+}
+.header-right{text-align:right;}
+.bpm-display{
+  font-family:var(--bebas);
+  font-size:2.8rem;
+  color:var(--accent3);
+  line-height:1;
+}
+.bpm-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;}
+
+/* ── DJ DECK TOP ── */
+.deck-top{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:16px;
+}
+.upload-deck{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:14px 16px;
+  display:flex;align-items:center;gap:12px;
+  cursor:pointer;
+  transition:border-color 0.2s,background 0.2s;
+  position:relative;overflow:hidden;
+}
+.upload-deck:hover{border-color:var(--accent2);background:#0f0f1e;}
+.upload-deck input{display:none;}
+.upload-deck::before{
+  content:'';
+  position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--muted);
+  transition:background 0.2s;
+}
+.upload-deck:hover::before{background:var(--accent2);}
+.upload-deck.loaded::before{background:var(--green);}
+.deck-flag{font-size:22px;}
+.deck-info strong{
+  font-family:var(--bar);font-weight:700;font-size:13px;
+  display:block;text-transform:uppercase;letter-spacing:1px;
+}
+.deck-info .fname{
+  font-family:var(--mono);font-size:10px;
+  color:var(--accent2);margin-top:3px;min-height:14px;
+}
+.deck-status{
+  margin-left:auto;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--muted);transition:background 0.2s;
+  flex-shrink:0;
+}
+.upload-deck.loaded .deck-status{background:var(--green);box-shadow:0 0 8px var(--green);}
+
+/* ── CONTROLS STRIP ── */
+.ctrl-strip{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.ctrl-group{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:4px;padding:8px 12px;
+}
+.ctrl-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
+input[type=range]{
+  -webkit-appearance:none;
+  height:3px;background:var(--border);
+  border-radius:2px;cursor:pointer;
+  accent-color:var(--accent2);
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--accent2);
+  border:2px solid var(--bg);
+  box-shadow:0 0 6px var(--accent2);
+}
+.ctrl-val{font-family:var(--mono);font-size:11px;color:var(--accent2);min-width:32px;text-align:center;}
+
+/* ── FILTER TABS ── */
+.filter-tabs{
+  display:flex;gap:4px;flex-wrap:wrap;
+  margin-bottom:16px;align-items:center;
+}
+.ftab{
+  font-family:var(--mono);font-size:11px;letter-spacing:1px;
+  padding:6px 14px;
+  border:1px solid var(--border);border-radius:2px;
+  background:transparent;color:var(--muted);
+  cursor:pointer;text-transform:uppercase;
+  transition:all 0.15s;
+}
+.ftab:hover{color:var(--text);border-color:var(--muted);}
+.ftab.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 12px rgba(255,45,85,0.4);}
+.demo-btn{
+  font-family:var(--mono);font-size:11px;
+  padding:6px 14px;border:1px dashed var(--muted);border-radius:2px;
+  background:transparent;color:var(--muted);cursor:pointer;
+  transition:all 0.15s;margin-left:auto;
+}
+.demo-btn:hover{color:var(--accent3);border-color:var(--accent3);}
+
+/* ── MAIN STAGE ── */
+.stage{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:6px;
+  overflow:hidden;
+  margin-bottom:16px;
+  min-height:220px;
+}
+.stage-noise{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;opacity:0.4;
+}
+.stage-corner{
+  position:absolute;font-family:var(--mono);font-size:10px;color:var(--border);letter-spacing:1px;
+}
+.stage-corner.tl{top:12px;left:14px;}
+.stage-corner.tr{top:12px;right:14px;}
+.stage-corner.bl{bottom:12px;left:14px;}
+.stage-corner.br{bottom:12px;right:14px;}
+
+.stage-inner{
+  padding:32px 32px 28px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:220px;text-align:center;
+  position:relative;z-index:1;
+}
+
+/* Lang badge */
+.lang-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  padding:4px 10px;border-radius:2px;
+  border:1px solid currentColor;
+  margin-bottom:18px;
+  transition:all 0.2s;
+}
+.lang-badge.tr-badge{color:var(--accent);border-color:var(--accent);text-shadow:0 0 8px var(--accent);}
+.lang-badge.en-badge{color:var(--accent2);border-color:var(--accent2);text-shadow:0 0 8px var(--accent2);}
+.lang-dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+
+/* Karaoke text */
+.kline{
+  font-family:var(--bebas);
+  font-size:clamp(2rem,5vw,3.2rem);
+  letter-spacing:2px;
+  line-height:1.2;
+  margin-bottom:16px;
+}
+.kline .word{
+  display:inline;
+  color:var(--muted);
+  transition:color 0.06s,text-shadow 0.06s;
+}
+.kline .word.lit{
+  color:#fff;
+  text-shadow:0 0 20px var(--accent2),0 0 40px rgba(0,229,255,0.3);
+}
+.kline .word.done{color:#2a2a42;}
+
+/* Sub line */
+.sub-line{
+  font-family:var(--bar);font-weight:300;font-size:16px;
+  color:var(--muted);letter-spacing:0.5px;
+  min-height:22px;
+  transition:color 0.3s,opacity 0.3s;opacity:0;
+}
+.sub-line.show{color:#6868aa;opacity:1;}
+
+/* ── PROGRESS ── */
+.prog-wrap{
+  height:2px;background:var(--border);
+  margin-bottom:16px;overflow:hidden;
+}
+.prog-fill{
+  height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  transition:width 0.3s;
+  box-shadow:0 0 6px var(--accent2);
+}
+
+/* ── VISUALIZER ── */
+.viz-strip{
+  display:flex;gap:3px;align-items:flex-end;
+  height:48px;
+  padding:0 2px;
+  margin-bottom:16px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:4px;
+  overflow:hidden;
+}
+.viz-bar{
+  flex:1;
+  background:var(--accent2);
+  border-radius:1px 1px 0 0;
+  min-height:2px;
+  transition:height 0.07s;
+  opacity:0.7;
+}
+
+/* ── TRANSPORT ── */
+.transport{
+  display:flex;align-items:center;gap:8px;justify-content:center;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.tbtn{
+  font-family:var(--bebas);font-size:1.1rem;letter-spacing:2px;
+  padding:10px 24px;
+  border:1px solid var(--border);border-radius:3px;
+  background:var(--surface);color:var(--text);
+  cursor:pointer;
+  transition:all 0.15s;
+  min-width:60px;text-align:center;
+}
+.tbtn:hover{background:var(--card);border-color:var(--muted);}
+.tbtn:disabled{opacity:0.25;cursor:default;}
+.tbtn.play-btn{
+  background:var(--accent);border-color:var(--accent);
+  color:#fff;min-width:140px;
+  box-shadow:0 0 20px rgba(255,45,85,0.35);
+  font-size:1.3rem;
+}
+.tbtn.play-btn:hover{background:#ff1a40;box-shadow:0 0 30px rgba(255,45,85,0.5);}
+.tbtn.play-btn.active{background:transparent;border-color:var(--accent);color:var(--accent);}
+.tbtn.stop-btn{border-color:#ff2d55;color:#ff2d55;}
+.tbtn.stop-btn:hover{background:rgba(255,45,85,0.1);}
+
+/* ── INFO ROW ── */
+.info-row{
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:var(--mono);font-size:11px;color:var(--muted);
+  padding:10px 14px;
+  background:var(--surface);border:1px solid var(--border);border-radius:4px;
+  margin-bottom:16px;
+}
+.info-counter{color:var(--accent3);}
+.info-tip{letter-spacing:1px;font-size:10px;}
+
+/* ── WARN ── */
+.warn{
+  font-family:var(--mono);font-size:11px;color:var(--accent3);
+  background:rgba(255,214,0,0.06);border:1px solid rgba(255,214,0,0.2);
+  border-radius:4px;padding:8px 14px;margin-bottom:12px;
+  display:none;letter-spacing:1px;
+}
+
+/* ── DECK LIGHTS ── */
+.deck-lights{
+  display:flex;gap:6px;justify-content:center;margin-bottom:16px;
+}
+.dlight{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--border);
+  transition:background 0.08s,box-shadow 0.08s;
+}
+.dlight.on-k{background:var(--accent);box-shadow:0 0 8px var(--accent);}
+.dlight.on-s{background:var(--accent3);box-shadow:0 0 8px var(--accent3);}
+.dlight.on-h{background:var(--accent2);box-shadow:0 0 8px var(--accent2);}
+.dlight.on-b{background:var(--green);box-shadow:0 0 8px var(--green);}
+
+/* ── ACTIVE GLOW ── */
+.stage.is-active{
+  border-color:rgba(0,229,255,0.3);
+  box-shadow:0 0 30px rgba(0,229,255,0.06),inset 0 0 60px rgba(0,229,255,0.02);
+}
+.stage.tr-active{
+  border-color:rgba(255,45,85,0.3);
+  box-shadow:0 0 30px rgba(255,45,85,0.06),inset 0 0 60px rgba(255,45,85,0.02);
+}
+
+/* ── STRIPE DECO ── */
+.stripe{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--purple),var(--accent3));margin-bottom:24px;}
+
+/* ── API KEY ROW ── */
+.apikey-row{
+  background:var(--surface);border:1px solid var(--border);border-radius:4px;
+  padding:12px 14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;
+}
+.apikey-inner{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.voice-row{display:flex;gap:8px;flex-wrap:wrap;}
+.voice-row .ctrl-group{flex:1;min-width:180px;}
+
+/* ── TTS STATUS ── */
+.tts-status{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:10px;letter-spacing:1px;
+  padding:3px 8px;border-radius:2px;border:1px solid currentColor;
+}
+.tts-status.loading{color:var(--accent3);}
+.tts-status.playing{color:var(--green);}
+.tts-status.error{color:var(--accent);}
+
+@media(max-width:600px){
+  .deck-top{grid-template-columns:1fr 1fr;}
+  .ctrl-strip{flex-direction:column;align-items:stretch;}
+  .ctrl-group{justify-content:space-between;}
+}
+
+/* ── ALTYAZI ARAMA PANELİ ── */
+.sub-search-panel{
+  background:var(--surface);border:1px solid var(--border);border-radius:4px;
+  padding:12px 14px;margin-bottom:12px;
+}
+.sub-search-title{
+  font-family:var(--mono);font-size:9px;color:var(--muted);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;
+}
+.sub-search-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
+.sub-search-input{
+  flex:1;min-width:180px;
+  background:var(--bg);border:1px solid var(--border);border-radius:3px;
+  color:var(--accent2);font-family:var(--mono);font-size:12px;
+  padding:6px 10px;outline:none;
+  transition:border-color 0.2s;
+}
+.sub-search-input:focus{border-color:var(--accent2);}
+.sub-search-input::placeholder{color:var(--muted);}
+.sub-search-btn{
+  font-family:var(--mono);font-size:11px;
+  padding:6px 14px;border:1px solid var(--accent2);border-radius:3px;
+  background:transparent;color:var(--accent2);cursor:pointer;
+  white-space:nowrap;transition:all 0.15s;
+}
+.sub-search-btn:hover{background:rgba(0,229,255,0.1);}
+.sub-search-btn:disabled{opacity:0.3;cursor:default;}
+.sub-results{display:flex;flex-direction:column;gap:4px;max-height:260px;overflow-y:auto;}
+.sub-result-item{
+  background:var(--card);border:1px solid var(--border);border-radius:3px;
+  padding:8px 10px;cursor:pointer;transition:border-color 0.15s;
+  display:flex;align-items:flex-start;gap:8px;
+}
+.sub-result-item:hover{border-color:var(--accent2);}
+.sub-result-item.selected-en{border-color:var(--accent2);background:rgba(0,229,255,0.06);}
+.sub-result-item.selected-tr{border-color:var(--accent);background:rgba(255,45,85,0.06);}
+.sub-result-lang{
+  font-family:var(--mono);font-size:9px;letter-spacing:1px;
+  padding:2px 5px;border-radius:2px;border:1px solid currentColor;
+  white-space:nowrap;margin-top:1px;
+}
+.sub-result-lang.en{color:var(--accent2);}
+.sub-result-lang.tr{color:var(--accent);}
+.sub-result-info{flex:1;min-width:0;}
+.sub-result-name{font-family:var(--bar);font-weight:600;font-size:12px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sub-result-meta{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;}
+.sub-load-btn{
+  font-family:var(--mono);font-size:10px;padding:3px 8px;
+  border:1px solid var(--green);border-radius:2px;
+  background:transparent;color:var(--green);cursor:pointer;
+  white-space:nowrap;transition:all 0.15s;flex-shrink:0;
+}
+.sub-load-btn:hover{background:rgba(0,255,136,0.1);}
+.sub-status{font-family:var(--mono);font-size:10px;color:var(--muted);padding:4px 0;letter-spacing:1px;}
+.sub-tabs{display:flex;gap:6px;margin-bottom:8px;}
+.sub-tab{
+  font-family:var(--mono);font-size:10px;letter-spacing:1px;padding:4px 10px;
+  border:1px solid var(--border);border-radius:2px;background:transparent;
+  color:var(--muted);cursor:pointer;transition:all 0.15s;
+}
+.sub-tab.active-en{border-color:var(--accent2);color:var(--accent2);}
+.sub-tab.active-tr{border-color:var(--accent);color:var(--accent);}
+
+</style>
+</head>
+<body>
+<div class="glow-bg">
+  <span></span><span></span><span></span>
+</div>
+
+<div class="app">
+  <div class="stripe"></div>
+
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">BREAK<span class="red">ING</span><br><span class="cyan">BAD</span> · KAR<span class="red">AOK</span>E</div>
+      <div class="tagline">// AMBIENT MODE · TR → EN · WEB SPEECH · EN İYİ SES · KAYIT YOK</div>
+    </div>
+    <div class="header-right">
+      <div class="bpm-display" id="bpm-disp">LOW</div>
+      <div class="bpm-label">MOOD</div>
+    </div>
+  </div>
+
+  <!-- UPLOAD DECKS -->
+  <div class="deck-top">
+    <label class="upload-deck" id="deck-en">
+      <input type="file" id="en-file" accept=".srt">
+      <div class="deck-flag">🇬🇧</div>
+      <div class="deck-info">
+        <strong>İngilizce SRT</strong>
+        <div class="fname" id="en-name">dosya yükle</div>
+      </div>
+      <div class="deck-status"></div>
+    </label>
+    <label class="upload-deck" id="deck-tr">
+      <input type="file" id="tr-file" accept=".srt">
+      <div class="deck-flag">🇹🇷</div>
+      <div class="deck-info">
+        <strong>Türkçe SRT</strong>
+        <div class="fname" id="tr-name">dosya yükle</div>
+      </div>
+      <div class="deck-status"></div>
+    </label>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-tabs">
+    <button class="ftab active" id="btn-all" onclick="setFilter('all')">Tümü</button>
+    <button class="ftab" id="btn-q" onclick="setFilter('q')">Sorular</button>
+    <button class="ftab" id="btn-neg" onclick="setFilter('neg')">Olumsuzlar</button>
+    <button class="demo-btn" onclick="loadDemo()">▸ DEMO YÜKLE</button>
+  </div>
+
+  <!-- CONTROLS STRIP -->
+  <div class="ctrl-strip">
+    <div class="ctrl-group">
+      <span class="ctrl-label">TR HIZI</span>
+      <input type="range" id="tr-spd" min="0.5" max="1.4" step="0.05" value="0.85">
+      <span class="ctrl-val" id="tr-spd-v">0.9×</span>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">EN HIZI</span>
+      <input type="range" id="en-spd" min="0.5" max="1.4" step="0.05" value="0.80">
+      <span class="ctrl-val" id="en-spd-v">0.8×</span>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">ATM VOL</span>
+      <input type="range" id="vol-sl" min="0" max="1" step="0.05" value="0.28">
+      <span class="ctrl-val" id="vol-v">28%</span>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">PULSE</span>
+      <input type="range" id="pulse-sl" min="0" max="1" step="0.05" value="0.18">
+      <span class="ctrl-val" id="pulse-v">18%</span>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">MOOD</span>
+      <select id="mood-sl" style="background:var(--bg);color:var(--accent2);border:none;font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;">
+        <option value="dark">DARK</option>
+        <option value="low">LOW</option>
+        <option value="rise">RISE</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ENGINE STATUS ROW -->
+  <div class="apikey-row" id="apikey-row">
+    <div class="apikey-inner">
+      <span class="ctrl-label" style="white-space:nowrap">TTS ENGINE</span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--accent2);flex:1">
+        TR + EN → Web Speech API · Sisteminizin en iyi sesi seçilir
+      </span>
+      <span id="key-status" style="font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap">⟳ HAZIRLANIY​OR…</span>
+    </div>
+    <div id="kokoro-progress" style="font-family:var(--mono);font-size:9px;color:var(--accent3);letter-spacing:1px;padding:2px 0 4px;">
+      ⟶ Kokoro modeli ilk açılışta ~80MB indirilir, sonra önbelleğe alınır.
+    </div>
+    <div class="voice-row">
+      <div class="ctrl-group" style="flex:1">
+        <span class="ctrl-label">TR SES</span>
+        <select id="tr-voice" style="background:var(--bg);color:var(--accent);border:none;font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;">
+          <option value="tr-TR-male">Erkek (TR)</option>
+          <option value="tr-TR-female">Kadın (TR)</option>
+        </select>
+      </div>
+      <div class="ctrl-group" style="flex:1">
+        <span class="ctrl-label">EN SES</span>
+        <select id="en-voice" style="background:var(--bg);color:var(--accent2);border:none;font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;">
+          <option value="en-male">Erkek (EN)</option>
+          <option value="en-female">Kadın (EN)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALTYAZI ARAMA PANELİ -->
+  <div class="sub-search-panel" id="sub-search-panel">
+    <div class="sub-search-title">⟶ ALTYAZI ARA · turkcealtyazi.org + opensubtitles</div>
+    <div class="sub-search-row">
+      <input type="text" class="sub-search-input" id="sub-query" placeholder="film/dizi adı yaz... (ör: Breaking Bad S01E01)">
+      <select id="sub-lang-sel" style="background:var(--bg);color:var(--accent2);border:1px solid var(--border);border-radius:3px;font-family:var(--mono);font-size:11px;padding:6px 8px;outline:none;cursor:pointer;">
+        <option value="en">🇬🇧 İngilizce</option>
+        <option value="tr">🇹🇷 Türkçe</option>
+        <option value="both">İkisi de</option>
+      </select>
+      <button class="sub-search-btn" id="sub-search-btn" onclick="searchSubtitles()">🔍 ARA</button>
+    </div>
+    <div class="sub-tabs">
+      <span style="font-family:var(--mono);font-size:9px;color:var(--muted);align-self:center;margin-right:4px;">SEÇİLEN:</span>
+      <span id="selected-en-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);">EN: —</span>
+      <span id="selected-tr-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);">TR: —</span>
+      <button class="sub-search-btn" id="sub-load-both-btn" onclick="loadSelectedSubs()" style="margin-left:auto;border-color:var(--green);color:var(--green);display:none;">⇩ İKİSİNİ YÜKle</button>
+    </div>
+    <div class="sub-results" id="sub-results">
+      <div class="sub-status" id="sub-status">⟶ Arama yapın, sonuçları seçip yükleyin.</div>
+    </div>
+  </div>
+
+  <!-- WARN -->
+  <div id="warn" class="warn"></div>
+
+  <!-- DECK LIGHTS -->
+  <div class="deck-lights" id="deck-lights">
+    <div class="dlight" id="dl0"></div><div class="dlight" id="dl1"></div>
+    <div class="dlight" id="dl2"></div><div class="dlight" id="dl3"></div>
+    <div class="dlight" id="dl4"></div><div class="dlight" id="dl5"></div>
+    <div class="dlight" id="dl6"></div><div class="dlight" id="dl7"></div>
+    <div class="dlight" id="dl8"></div><div class="dlight" id="dl9"></div>
+    <div class="dlight" id="dl10"></div><div class="dlight" id="dl11"></div>
+    <div class="dlight" id="dl12"></div><div class="dlight" id="dl13"></div>
+    <div class="dlight" id="dl14"></div><div class="dlight" id="dl15"></div>
+  </div>
+
+  <!-- VISUALIZER -->
+  <div class="viz-strip" id="viz-strip"></div>
+
+  <!-- PROGRESS -->
+  <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+
+  <!-- MAIN STAGE -->
+  <div class="stage" id="main-stage">
+    <div class="stage-noise"></div>
+    <div class="stage-corner tl" id="sc-tl">SRC</div>
+    <div class="stage-corner tr" id="sc-tr">00:00:00</div>
+    <div class="stage-corner bl">KARAOKE · BB</div>
+    <div class="stage-corner br" id="sc-br">READY</div>
+    <div class="stage-inner">
+      <div class="lang-badge tr-badge" id="lang-badge"><span class="lang-dot"></span>TR</div>
+      <div class="kline" id="kline">DEMO YÜKLE VEYA SRT DOSYASI SEÇ</div>
+      <div class="sub-line" id="sub-line"></div>
+    </div>
+  </div>
+
+  <!-- TRANSPORT -->
+  <div class="transport">
+    <button class="tbtn" id="btn-prev" onclick="stepBy(-1)" disabled>◂◂</button>
+    <button class="tbtn play-btn" id="btn-play" onclick="togglePlay()">▶ BAŞLAT</button>
+    <button class="tbtn stop-btn" id="btn-stop" onclick="fullStop()" disabled>■ STOP</button>
+    <button class="tbtn" id="btn-next" onclick="stepBy(1)" disabled>▸▸</button>
+  </div>
+
+  <!-- INFO -->
+  <div class="info-row">
+    <span class="info-counter" id="counter">—</span>
+    <span class="info-tip">ÖNCE TR · SONRA EN · TIKLAYARAK NAVİGASYON</span>
+  </div>
+
+</div>
+
+<script>
+let enSubs=[],trSubs=[],matched=[],filtered=[];
+let currentFilter='all';
+let currentIdx=-1, playing=false;
+let audioCtx=null, masterGain=null, beatInterval=null, vizBars=[];
+let beatStep=0;
+let dlightTimeout=null;
+let padNodes=[], pingTimer=null, vizAnimId=null, lightInterval=null;
+
+// ── VIZ SETUP ─────────────────────────────
+function setupViz(){
+  const v=document.getElementById('viz-strip');
+  v.innerHTML=''; vizBars=[];
+  for(let i=0;i<48;i++){
+    const b=document.createElement('div');
+    b.className='viz-bar';b.style.height='2px';
+    v.appendChild(b);vizBars.push(b);
+  }
+}
+setupViz();
+
+// ── AUDIO CTX ─────────────────────────────
+function getCtx(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(!masterGain){
+    masterGain=audioCtx.createGain();
+    const revLen=audioCtx.sampleRate*2.5;
+    const revBuf=audioCtx.createBuffer(2,revLen,audioCtx.sampleRate);
+    for(let ch=0;ch<2;ch++){const d=revBuf.getChannelData(ch);for(let i=0;i<revLen;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/revLen,2.2);}
+    const rev=audioCtx.createConvolver();rev.buffer=revBuf;
+    const revG=audioCtx.createGain();revG.gain.value=0.32;
+    masterGain.connect(rev);rev.connect(revG);revG.connect(audioCtx.destination);
+    masterGain.connect(audioCtx.destination);
+  }
+  masterGain.gain.value=parseFloat(document.getElementById('vol-sl').value);
+  return audioCtx;
+}
+
+// ── MOOD DEFINITIONS ──────────────────────
+const moods={
+  dark:{freqs:[55,82.4,98,130.8,164.8],subFreq:27.5,padVol:0.06,subVol:0.10,noiseVol:0.016,label:'DARK'},
+  low: {freqs:[65.4,98,123.5,130.8,196],subFreq:32.7,padVol:0.055,subVol:0.08,noiseVol:0.012,label:'LOW'},
+  rise:{freqs:[87.3,130.8,174.6,196,261.6],subFreq:43.6,padVol:0.06,subVol:0.07,noiseVol:0.010,label:'RISE'}
+};
+
+// ── ATMOSPHERE ENGINE ──────────────────────
+function startAtmosphere(){
+  const ctx=getCtx();
+  const moodKey=document.getElementById('mood-sl')?document.getElementById('mood-sl').value:'dark';
+  const mood=moods[moodKey]||moods.dark;
+  stopAtmosphere();
+
+  // Layered pad chords — 3 detuned sines per frequency
+  mood.freqs.forEach((freq,i)=>{
+    [-0.9,0,0.9].forEach(det=>{
+      const o=ctx.createOscillator();o.type='sine';
+      o.frequency.value=freq*(1+det*0.0014);
+      const g=ctx.createGain();g.gain.value=mood.padVol;
+      // Slow LFO breathing
+      const lfo=ctx.createOscillator();lfo.type='sine';
+      lfo.frequency.value=0.04+i*0.011+Math.random()*0.025;
+      const lfoG=ctx.createGain();lfoG.gain.value=mood.padVol*0.38;
+      lfo.connect(lfoG);lfoG.connect(g.gain);
+      o.connect(g);g.connect(masterGain);
+      o.start();lfo.start();
+      padNodes.push(o,g,lfo);
+    });
+  });
+
+  // Sub bass with slow tremolo
+  const sub=ctx.createOscillator();sub.type='sine';sub.frequency.value=mood.subFreq;
+  const subG=ctx.createGain();subG.gain.value=mood.subVol;
+  const subLfo=ctx.createOscillator();subLfo.type='sine';subLfo.frequency.value=0.22;
+  const subLfoG=ctx.createGain();subLfoG.gain.value=mood.subVol*0.55;
+  subLfo.connect(subLfoG);subLfoG.connect(subG.gain);
+  sub.connect(subG);subG.connect(masterGain);
+  sub.start();subLfo.start();
+  padNodes.push(sub,subLfo);
+
+  // Vinyl texture noise
+  const noiseBuf=ctx.createBuffer(1,ctx.sampleRate*4,ctx.sampleRate);
+  const nd=noiseBuf.getChannelData(0);
+  for(let i=0;i<nd.length;i++) nd[i]=(Math.random()*2-1)*0.25;
+  const nLoop=ctx.createBufferSource();nLoop.buffer=noiseBuf;nLoop.loop=true;
+  const nF=ctx.createBiquadFilter();nF.type='bandpass';nF.frequency.value=500;nF.Q.value=0.35;
+  const nG=ctx.createGain();nG.gain.value=mood.noiseVol;
+  nLoop.connect(nF);nF.connect(nG);nG.connect(masterGain);
+  nLoop.start();
+  padNodes.push(nLoop);
+
+  schedulePing();
+}
+
+function schedulePing(){
+  if(!playing) return;
+  pingTimer=setTimeout(()=>{if(playing){playPing();schedulePing();}},4000+Math.random()*5500);
+}
+function playPing(){
+  const ctx=getCtx();
+  const pfreqs=[523.3,440,392,349.2,261.6,329.6];
+  const freq=pfreqs[Math.floor(Math.random()*pfreqs.length)];
+  const o=ctx.createOscillator();o.type='sine';o.frequency.value=freq;
+  const g=ctx.createGain();
+  const pulseVol=parseFloat(document.getElementById('pulse-sl')?document.getElementById('pulse-sl').value:0.18);
+  o.connect(g);g.connect(masterGain);
+  const t=ctx.currentTime;
+  g.gain.setValueAtTime(0,t);
+  g.gain.linearRampToValueAtTime(pulseVol*0.22,t+0.1);
+  g.gain.exponentialRampToValueAtTime(0.001,t+2.5);
+  o.start(t);o.stop(t+2.6);
+}
+
+function stopAtmosphere(){
+  padNodes.forEach(n=>{try{n.stop?n.stop():n.disconnect();}catch(e){}});
+  padNodes=[];
+  if(pingTimer){clearTimeout(pingTimer);pingTimer=null;}
+}
+
+// ── SMOOTH AMBIENT VIZ ──────────────────────
+let vizPhase=0;
+function startViz(){
+  stopViz();
+  function frame(){
+    vizPhase+=0.035;
+    vizBars.forEach((b,i)=>{
+      const w1=Math.sin(vizPhase+i*0.26)*0.5+0.5;
+      const w2=Math.sin(vizPhase*0.6+i*0.15)*0.3+0.3;
+      const h=Math.round(w1*w2*20)+2;
+      const t=i/vizBars.length;
+      b.style.height=h+'px';
+      b.style.background=`rgba(${Math.round(t*255)},${Math.round((1-t)*180)},${255-Math.round(t*120)},0.7)`;
+    });
+    vizAnimId=requestAnimationFrame(frame);
+  }
+  vizAnimId=requestAnimationFrame(frame);
+}
+function stopViz(){
+  if(vizAnimId){cancelAnimationFrame(vizAnimId);vizAnimId=null;}
+  vizBars.forEach(b=>{b.style.height='2px';b.style.opacity='0.7';});
+}
+
+// ── GENTLE DECK LIGHTS ──────────────────────
+function startLights(){
+  stopLights();let ls=0;
+  lightInterval=setInterval(()=>{
+    if(!playing){stopLights();return;}
+    const idx=ls%16;
+    const el=document.getElementById('dl'+idx);
+    if(el&&idx%4===0){el.className='dlight on-b';setTimeout(()=>{if(el)el.className='dlight';},700);}
+    else if(el&&idx%8===3){el.className='dlight on-h';setTimeout(()=>{if(el)el.className='dlight';},500);}
+    ls++;
+  },1100);
+}
+function stopLights(){
+  if(lightInterval){clearInterval(lightInterval);lightInterval=null;}
+  document.querySelectorAll('.dlight').forEach(d=>d.className='dlight');
+}
+
+function startBeat(){startAtmosphere();startViz();startLights();}
+function stopBeat(){stopAtmosphere();stopViz();stopLights();}
+
+// ── SRT ─────────────────────────────────────
+function fixEnc(buf){
+  const b=new Uint8Array(buf);
+  if(b[0]===0xEF&&b[1]===0xBB&&b[2]===0xBF) return new TextDecoder('utf-8').decode(buf);
+  if(b[0]===0xFF&&b[1]===0xFE) return new TextDecoder('utf-16le').decode(buf);
+  if(b[0]===0xFE&&b[1]===0xFF) return new TextDecoder('utf-16be').decode(buf);
+  try{return new TextDecoder('utf-8',{fatal:true}).decode(buf);}catch(e){}
+  try{return new TextDecoder('windows-1254',{fatal:false}).decode(buf);}catch(e){}
+  return new TextDecoder('iso-8859-9',{fatal:false}).decode(buf);
+}
+function parseSRT(text){
+  text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const blocks=text.trim().split(/\n\s*\n/);
+  const res=[];
+  for(const bl of blocks){
+    const lines=bl.trim().split('\n');
+    if(lines.length<3) continue;
+    let tl='',ts=2;
+    for(let i=0;i<Math.min(lines.length,3);i++){if(lines[i].includes('-->')){tl=lines[i];ts=i+1;break;}}
+    if(!tl) continue;
+    const m=tl.match(/(\d{2}):(\d{2}):(\d{2})[,.](\d{3})/);
+    if(!m) continue;
+    const sec=parseInt(m[1])*3600+parseInt(m[2])*60+parseInt(m[3])+parseInt(m[4])/1000;
+    const lbl=m[1]+':'+m[2]+':'+m[3];
+    const txt=lines.slice(ts).join(' ').replace(/<[^>]+>/g,'').replace(/\{[^}]+\}/g,'').trim();
+    if(txt) res.push({sec,time:lbl,text:txt});
+  }
+  return res;
+}
+function matchSubs(en,tr){
+  const T=1.5;const used=new Set();const rows=[];
+  for(const e of en){
+    let best=null,bd=Infinity;
+    for(let i=0;i<tr.length;i++){
+      if(used.has(i)) continue;
+      const d=Math.abs(tr[i].sec-e.sec);
+      if(d<bd&&d<=T){bd=d;best=i;}
+    }
+    if(best!==null){used.add(best);rows.push({time:e.time,en:e.text,tr:tr[best].text});}
+    else rows.push({time:e.time,en:e.text,tr:null});
+  }
+  return rows;
+}
+function readFile(inp,nameId,deckId,cb){
+  const file=inp.files[0];if(!file) return;
+  document.getElementById(nameId).textContent=file.name;
+  document.getElementById(deckId).classList.add('loaded');
+  const r=new FileReader();
+  r.onload=e=>cb(parseSRT(fixEnc(e.target.result)));
+  r.readAsArrayBuffer(file);
+}
+document.getElementById('en-file').addEventListener('change',function(){readFile(this,'en-name','deck-en',s=>{enSubs=s;tryMatch();});});
+document.getElementById('tr-file').addEventListener('change',function(){readFile(this,'tr-name','deck-tr',s=>{trSubs=s;tryMatch();});});
+
+function tryMatch(){
+  if(enSubs.length&&trSubs.length){
+    matched=matchSubs(enSubs,trSubs);
+    const nm=matched.filter(r=>r.tr===null).length;
+    const w=document.getElementById('warn');
+    if(nm>0){w.style.display='block';w.textContent='⚠ '+nm+' SATIR EŞLEŞMEDİ';}
+    else w.style.display='none';
+    applyFilter();
+  }
+}
+
+// ── FILTERS ──────────────────────────────────
+function setFilter(f){
+  currentFilter=f;
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('btn-'+f).classList.add('active');
+  applyFilter();
+}
+function matchFn(text){
+  if(currentFilter==='q') return text.includes('?');
+  if(currentFilter==='neg') return /\b(don't|doesn't|didn't|can't|won't|isn't|aren't|wasn't|weren't|not)\b/i.test(text);
+  return true;
+}
+function applyFilter(){
+  filtered=matched.filter(r=>matchFn(r.en));
+  currentIdx=-1;updateUI();
+}
+
+// ── WEB SPEECH TTS (EN + TR) ─────────────────────
+// Uses best available system voices — works on file:// with zero downloads
+let ttsCache = {};
+let currentSource = null;
+let currentUtterance = null;
+let bestENVoice = null;
+let bestTRVoice = null;
+
+function setKeyStatus(msg, col) {
+  const el = document.getElementById('key-status');
+  if (el) { el.textContent = msg; el.style.color = col || ''; }
+}
+
+function setKokoroProgress(msg) {
+  const el = document.getElementById('kokoro-progress');
+  if (el) el.textContent = msg;
+}
+
+function pickBestVoices() {
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return;
+
+  // Priority order for English — neural/natural voices first
+  const enPriority = [
+    'Microsoft Guy Online','Microsoft Jenny Online','Microsoft Aria Online',
+    'Microsoft Davis Online','Microsoft Andrew Online','Microsoft Brian Online',
+    'Google US English','Samantha','Alex','Daniel',
+    'en-US-Neural','en-GB-Neural'
+  ];
+  for (const pref of enPriority) {
+    const v = voices.find(v => v.name.includes(pref) || v.voiceURI.includes(pref));
+    if (v) { bestENVoice = v; break; }
+  }
+  if (!bestENVoice) bestENVoice = voices.find(v => v.lang.startsWith('en')) || null;
+
+  // Turkish
+  const trPriority = ['Microsoft Emel','Microsoft Ahmet','Google Türkçe'];
+  for (const pref of trPriority) {
+    const v = voices.find(v => v.name.includes(pref));
+    if (v) { bestTRVoice = v; break; }
+  }
+  if (!bestTRVoice) bestTRVoice = voices.find(v => v.lang.startsWith('tr')) || null;
+
+  const enName = bestENVoice ? bestENVoice.name : 'bulunamadı';
+  const trName = bestTRVoice ? bestTRVoice.name : 'bulunamadı';
+  setKeyStatus('✓ HAZIR', 'var(--green)');
+  setKokoroProgress(`✓ EN: ${enName.slice(0,30)} | TR: ${trName.slice(0,20)}`);
+}
+
+window.addEventListener('load', () => {
+  document.getElementById('en-spd-v').textContent = parseFloat(document.getElementById('en-spd').value).toFixed(1) + '×';
+  document.getElementById('tr-spd-v').textContent = parseFloat(document.getElementById('tr-spd').value).toFixed(1) + '×';
+  // Voices load async in Chrome
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = pickBestVoices;
+  }
+  setTimeout(pickBestVoices, 500);
+});
+
+function speakWithVoice(text, voice, lang, speed) {
+  return new Promise((res) => {
+    if (!playing) { res(); return; }
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = lang;
+    utt.rate = Math.max(0.5, Math.min(2.0, speed));
+    utt.pitch = 1.0;
+    utt.volume = 1.0;
+    if (voice) utt.voice = voice;
+    currentUtterance = utt;
+    const words = text.split(/\s+/);
+    const wpm = lang.startsWith('tr') ? 120 : 150;
+    const estDurMs = (words.length / (wpm * speed)) * 60000;
+    animateWords(words, estDurMs, () => {});
+    utt.onend = () => { currentUtterance = null; setStageStatus('', ''); res(); };
+    utt.onerror = (e) => { currentUtterance = null; console.warn('TTS error:', e); res(); };
+    window.speechSynthesis.speak(utt);
+    // Chrome bug: long texts get cut off — keep alive
+    const keepAlive = setInterval(() => {
+      if (!window.speechSynthesis.speaking) { clearInterval(keepAlive); return; }
+      window.speechSynthesis.pause();
+      window.speechSynthesis.resume();
+    }, 10000);
+    utt.onend = () => { clearInterval(keepAlive); currentUtterance = null; setStageStatus('', ''); res(); };
+    utt.onerror = () => { clearInterval(keepAlive); currentUtterance = null; res(); };
+  });
+}
+
+function stopCurrentAudio() {
+  if (currentSource) { try { currentSource.stop(); } catch (e) {} currentSource = null; }
+  if (currentUtterance || window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    currentUtterance = null;
+  }
+}
+
+// ── KARAOKE HIGHLIGHT ─────────────────────────
+function buildWordSpans(text) {
+  return text.split(/\s+/).map((w, i) => `<span class="word" id="w${i}">${w}</span>`).join(' ');
+}
+
+// Estimate word timing from audio duration
+function animateWords(words, durationMs, onDone) {
+  let wIdx = 0;
+  const avgMs = durationMs / words.length;
+  function tick() {
+    if (!playing) { onDone(); return; }
+    const el = document.getElementById('w' + wIdx);
+    if (el) {
+      if (wIdx > 0) { const p = document.getElementById('w' + (wIdx - 1)); if (p) { p.classList.remove('lit'); p.classList.add('done'); } }
+      el.classList.add('lit');
+    }
+    wIdx++;
+    if (wIdx < words.length) setTimeout(tick, avgMs);
+  }
+  tick();
+  setTimeout(() => {
+    for (let i = 0; i < words.length; i++) { const el = document.getElementById('w' + i); if (el) { el.classList.remove('lit'); el.classList.add('done'); } }
+    onDone();
+  }, durationMs + 80);
+}
+
+async function speakOAI(text, voice, speed, lang) {
+  if (!playing) return;
+  if (lang === 'tr') {
+    setStageStatus('▶ TR ÇALIYOR', 'var(--accent)');
+    await speakWithVoice(text, bestTRVoice, 'tr-TR', speed);
+  } else {
+    setStageStatus('▶ EN ÇALIYOR', 'var(--accent2)');
+    await speakWithVoice(text, bestENVoice, 'en-US', speed);
+  }
+}
+
+function setStageStatus(msg,col){
+  const el=document.getElementById('sc-br');
+  if(el){el.textContent=msg;el.style.color=col||'';}
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ── PLAY ROW ──────────────────────────────────
+async function playRow(i){
+  if(i<0||i>=filtered.length){playing=false;stopBeat();updateUI();return;}
+  currentIdx=i;updateUI();
+  const row=filtered[i];
+  const stage=document.getElementById('main-stage');
+  const kline=document.getElementById('kline');
+  const subLine=document.getElementById('sub-line');
+  const badge=document.getElementById('lang-badge');
+  const scTr=document.getElementById('sc-tr');
+
+  const trVoice=document.getElementById('tr-voice').value;
+  const enVoice=document.getElementById('en-voice').value;
+  const trSpeed=parseFloat(document.getElementById('tr-spd').value);
+  const enSpeed=parseFloat(document.getElementById('en-spd').value);
+
+  scTr.textContent=row.time||'--:--:--';
+  setStageStatus((i+1)+'/'+filtered.length,'');
+
+  try{
+    // ─ TR ─
+    stage.className='stage tr-active';
+    badge.innerHTML='<span class="lang-dot"></span>TR';
+    badge.className='lang-badge tr-badge';
+    kline.innerHTML=buildWordSpans(row.tr||'—');
+    subLine.className='sub-line';subLine.textContent='';
+
+    if(row.tr) await speakOAI(row.tr, trVoice, trSpeed, 'tr');
+    if(!playing) return;
+    await sleep(220);if(!playing) return;
+
+    // ─ EN ─
+    stage.className='stage is-active';
+    badge.innerHTML='<span class="lang-dot"></span>EN';
+    badge.className='lang-badge en-badge';
+    kline.innerHTML=buildWordSpans(row.en);
+    subLine.className='sub-line show';subLine.textContent=row.tr||'';
+
+    await speakOAI(row.en, enVoice, enSpeed, 'en');
+    if(!playing) return;
+    await sleep(280);if(!playing) return;
+
+  }catch(err){
+    setStageStatus('⚠ '+err.message,'var(--accent)');
+    await sleep(1800);if(!playing) return;
+  }
+
+  stage.className='stage';
+  playRow(i+1);
+}
+
+// ── TRANSPORT ─────────────────────────────────
+function togglePlay(){
+  if(playing){pausePlay();return;}
+  if(!window.AudioContext&&!window.webkitAudioContext){alert('Web Audio API desteklenmiyor.');return;}
+  // No API key needed - Kokoro runs locally
+  getCtx().resume();
+  playing=true;startBeat();
+  document.getElementById('btn-play').textContent='⏸ DURAKLAT';
+  document.getElementById('btn-play').classList.add('active');
+  document.getElementById('btn-stop').disabled=false;
+  playRow(currentIdx<0?0:currentIdx);
+}
+function pausePlay(){
+  playing=false;stopCurrentAudio();stopBeat();
+  document.getElementById('btn-play').textContent='▶ DEVAM ET';
+  document.getElementById('btn-play').classList.remove('active');
+  updateUI();
+}
+function fullStop(){
+  playing=false;stopCurrentAudio();stopBeat();
+  currentIdx=-1;
+  document.getElementById('btn-play').textContent='▶ BAŞLAT';
+  document.getElementById('btn-play').classList.remove('active');
+  document.getElementById('kline').textContent='DEMO YÜKLE VEYA SRT DOSYASI SEÇ';
+  document.getElementById('sub-line').textContent='';
+  document.getElementById('sub-line').className='sub-line';
+  document.getElementById('lang-badge').innerHTML='<span class="lang-dot"></span>TR';
+  document.getElementById('lang-badge').className='lang-badge tr-badge';
+  document.getElementById('main-stage').className='stage';
+  setStageStatus('READY','');
+  updateUI();
+}
+function stepBy(d){
+  const ni=currentIdx+d;
+  if(ni<0||ni>=filtered.length) return;
+  playing=true;
+  stopCurrentAudio();
+  if(!beatInterval) startBeat();
+  document.getElementById('btn-play').textContent='⏸ DURAKLAT';
+  document.getElementById('btn-play').classList.add('active');
+  playRow(ni);
+}
+
+function updateUI(){
+  const has=filtered.length>0;
+  document.getElementById('btn-prev').disabled=currentIdx<=0;
+  document.getElementById('btn-next').disabled=!has||currentIdx>=filtered.length-1;
+  document.getElementById('btn-stop').disabled=!playing;
+  document.getElementById('counter').textContent=has&&currentIdx>=0?(currentIdx+1)+' / '+filtered.length+' SATIR':'— / —';
+  const pct=has&&currentIdx>=0?((currentIdx+1)/filtered.length*100):0;
+  document.getElementById('prog-fill').style.width=Math.round(pct)+'%';
+}
+
+// ── SLIDERS ──────────────────────────────────
+document.getElementById('tr-spd').addEventListener('input',function(){document.getElementById('tr-spd-v').textContent=parseFloat(this.value).toFixed(1)+'×';});
+document.getElementById('en-spd').addEventListener('input',function(){document.getElementById('en-spd-v').textContent=parseFloat(this.value).toFixed(1)+'×';});document.getElementById('vol-sl').addEventListener('input',function(){
+  document.getElementById('vol-v').textContent=Math.round(this.value*100)+'%';
+  if(masterGain) masterGain.gain.value=parseFloat(this.value);
+});
+document.getElementById('pulse-sl').addEventListener('input',function(){
+  document.getElementById('pulse-v').textContent=Math.round(this.value*100)+'%';
+});
+document.getElementById('mood-sl').addEventListener('change',function(){
+  document.getElementById('bpm-disp').textContent=this.value.toUpperCase();
+  if(playing){stopAtmosphere();startAtmosphere();}
+});
+
+// ── DEMO ──────────────────────────────────────
+function loadDemo(){
+  enSubs=[
+    {sec:65,time:'00:01:05',text:"You wanna cook crystal meth? You, you and me."},
+    {sec:72,time:'00:01:12',text:"I don't know what you're talking about."},
+    {sec:78,time:'00:01:18',text:"We're going to need a lab. A proper one."},
+    {sec:85,time:'00:01:25',text:"What are you doing? Are you out of your mind?"},
+    {sec:93,time:'00:01:33',text:"I'm not in danger, Skyler. I am the danger."},
+    {sec:100,time:'00:01:40',text:"Stay out of my territory."},
+    {sec:107,time:'00:01:47',text:"It's not about the money. It's about the pride of the craft."},
+    {sec:115,time:'00:01:55',text:"Science. Yeah, Mr. White! Yeah, science!"},
+    {sec:123,time:'00:02:03',text:"I've been in the meth business for a while. Haven't you heard?"},
+    {sec:131,time:'00:02:11',text:"I did it for me. I liked it. I was good at it. And I was really alive."},
+    {sec:140,time:'00:02:20',text:"You clearly don't know who you're talking to."},
+    {sec:148,time:'00:02:28',text:"Isn't that what you wanted? Isn't it?"},
+    {sec:155,time:'00:02:35',text:"We had a good thing, you stupid son of a bitch!"},
+    {sec:162,time:'00:02:42',text:"Say my name."},
+    {sec:168,time:'00:02:48',text:"You're goddamn right."},
+  ];
+  trSubs=[
+    {sec:65,time:'00:01:05',text:"Kristal met pişirmek istiyorsun? Sen, sen ve ben."},
+    {sec:72,time:'00:01:12',text:"Ne hakkında konuştuğunu bilmiyorum."},
+    {sec:78,time:'00:01:18',text:"Bir laboratuvara ihtiyacımız olacak. Gerçek bir tane."},
+    {sec:85,time:'00:01:25',text:"Ne yapıyorsun? Aklını mı kaçırdın?"},
+    {sec:93,time:'00:01:33',text:"Ben tehlikede değilim, Skyler. Ben tehlikenin ta kendisiyim."},
+    {sec:100,time:'00:01:40',text:"Benim bölgemden uzak dur."},
+    {sec:107,time:'00:01:47',text:"Bu para meselesi değil. Bu, işin gururuyla ilgili."},
+    {sec:115,time:'00:01:55',text:"Bilim. Evet Bay White! Evet, bilim!"},
+    {sec:123,time:'00:02:03',text:"Bir süredir bu işin içindeyim. Duymadın mı?"},
+    {sec:131,time:'00:02:11',text:"Bunu kendim için yaptım. Sevdim. İyiydim bunda. Ve gerçekten... Canlıydım."},
+    {sec:140,time:'00:02:20',text:"Açıkça kiminle konuştuğunu bilmiyorsun."},
+    {sec:148,time:'00:02:28',text:"İstediğin bu değil miydi? Değil mi?"},
+    {sec:155,time:'00:02:35',text:"Güzel bir şeyimiz vardı, seni aptal herif!"},
+    {sec:162,time:'00:02:42',text:"Adımı söyle."},
+    {sec:168,time:'00:02:48',text:"Kesinlikle haklısın."},
+  ];
+  matched=matchSubs(enSubs,trSubs);
+  document.getElementById('en-name').textContent='demo_en.srt';
+  document.getElementById('tr-name').textContent='demo_tr.srt';
+  document.getElementById('deck-en').classList.add('loaded');
+  document.getElementById('deck-tr').classList.add('loaded');
+  document.getElementById('warn').style.display='none';
+  applyFilter();
+  document.getElementById('kline').textContent='▶ BAŞLAT BUTONUNA BAS';
+}
+
+// ── ALTYAZI ARAMA (OpenSubtitles API + CORS proxy) ──────────────────
+// Uses OpenSubtitles.com REST API v1 (free, no key needed for basic search)
+// CORS proxy: allorigins.win (free, open)
+
+let selectedEnSub = null; // {id, url, name}
+let selectedTrSub = null;
+
+const PROXY = 'https://api.allorigins.win/raw?url=';
+const OS_API = 'https://api.opensubtitles.com/api/v1';
+const OS_APP = 'BBKaraokeApp v1.0';
+
+function osHeaders(){
+  return {'Api-Key':'', 'Content-Type':'application/json', 'User-Agent': OS_APP};
+}
+
+async function searchSubtitles(){
+  const query = document.getElementById('sub-query').value.trim();
+  if(!query){setSubStatus('⚠ Arama terimi gir');return;}
+  const langSel = document.getElementById('sub-lang-sel').value;
+  const btn = document.getElementById('sub-search-btn');
+  btn.disabled = true;
+  setSubStatus('⟳ Aranıyor…');
+  document.getElementById('sub-results').innerHTML = '<div class="sub-status" id="sub-status">⟳ Aranıyor…</div>';
+
+  const langs = langSel === 'both' ? ['en','tr'] : [langSel];
+  let allResults = [];
+
+  try{
+    for(const lang of langs){
+      const params = new URLSearchParams({
+        query: query,
+        languages: lang,
+        type: 'all',
+        order_by: 'download_count',
+        order_direction: 'desc'
+      });
+      const url = `${OS_API}/subtitles?${params}`;
+      const proxyUrl = PROXY + encodeURIComponent(url);
+      const resp = await fetch(proxyUrl, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+      if(!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      if(data.data && data.data.length){
+        for(const item of data.data.slice(0,8)){
+          const attrs = item.attributes;
+          const file = attrs.files && attrs.files[0];
+          allResults.push({
+            id: item.id,
+            fileId: file ? file.file_id : null,
+            name: attrs.release || attrs.feature_details?.title || query,
+            lang: lang,
+            downloads: attrs.download_count || 0,
+            fps: attrs.fps,
+            uploader: attrs.uploader?.name || '?'
+          });
+        }
+      }
+    }
+
+    renderResults(allResults);
+  }catch(e){
+    setSubStatus('⚠ Hata: ' + e.message + ' — OpenSubtitles erişilemiyor olabilir');
+    console.error(e);
+  }
+  btn.disabled = false;
+}
+
+function renderResults(results){
+  const container = document.getElementById('sub-results');
+  if(!results.length){
+    container.innerHTML = '<div class="sub-status">Sonuç bulunamadı. Farklı anahtar kelime dene.</div>';
+    return;
+  }
+  container.innerHTML = '';
+  for(const r of results){
+    const div = document.createElement('div');
+    div.className = 'sub-result-item';
+    div.innerHTML = `
+      <span class="sub-result-lang ${r.lang}">${r.lang.toUpperCase()}</span>
+      <div class="sub-result-info">
+        <div class="sub-result-name" title="${r.name}">${r.name}</div>
+        <div class="sub-result-meta">⇩ ${r.downloads.toLocaleString()} · ${r.uploader}</div>
+      </div>
+      <button class="sub-load-btn" onclick="selectAndDownload('${r.id}','${r.fileId}','${r.lang}',this,\`${r.name.replace(/`/g,"'")}\`)">SEÇ</button>
+    `;
+    container.appendChild(div);
+  }
+  setSubStatus(`${results.length} sonuç — bir EN ve bir TR seç, sonra İKİSİNİ YÜKLE`);
+}
+
+async function selectAndDownload(id, fileId, lang, btn, name){
+  btn.textContent = '⟳';
+  btn.disabled = true;
+  try{
+    // Request download link from OpenSubtitles
+    const dlUrl = `${OS_API}/download`;
+    const proxyUrl = PROXY + encodeURIComponent(dlUrl);
+    // allorigins doesn't support POST well, use alternative
+    // Fallback: direct fetch with no-cors won't work for POST
+    // Use cors.sh or corsproxy.io
+    const resp = await fetch('https://corsproxy.io/?' + encodeURIComponent(dlUrl), {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Api-Key':'', 'User-Agent': OS_APP},
+      body: JSON.stringify({file_id: parseInt(fileId)})
+    });
+    if(!resp.ok) throw new Error('Download link alınamadı: ' + resp.status);
+    const data = await resp.json();
+    const link = data.link;
+    if(!link) throw new Error('Link boş geldi');
+
+    // Fetch the actual SRT file
+    const srtResp = await fetch('https://corsproxy.io/?' + encodeURIComponent(link));
+    if(!srtResp.ok) throw new Error('SRT indirilemedi');
+    const srtText = await srtResp.text();
+    const parsed = parseSRT(srtText);
+
+    if(lang === 'en'){
+      enSubs = parsed;
+      selectedEnSub = {id, name};
+      document.getElementById('en-name').textContent = name.slice(0,28);
+      document.getElementById('deck-en').classList.add('loaded');
+      document.getElementById('selected-en-label').textContent = 'EN: ✓ ' + name.slice(0,20);
+      document.getElementById('selected-en-label').style.color = 'var(--accent2)';
+    } else {
+      trSubs = parsed;
+      selectedTrSub = {id, name};
+      document.getElementById('tr-name').textContent = name.slice(0,28);
+      document.getElementById('deck-tr').classList.add('loaded');
+      document.getElementById('selected-tr-label').textContent = 'TR: ✓ ' + name.slice(0,20);
+      document.getElementById('selected-tr-label').style.color = 'var(--accent)';
+    }
+
+    tryMatch();
+    btn.textContent = '✓';
+    btn.style.borderColor = 'var(--green)';
+
+    if(selectedEnSub && selectedTrSub){
+      document.getElementById('sub-load-both-btn').style.display = 'inline-block';
+    }
+    setSubStatus(`✓ ${lang.toUpperCase()} yüklendi: ${parsed.length} satır`);
+
+  }catch(e){
+    btn.textContent = '⚠';
+    btn.disabled = false;
+    setSubStatus('⚠ ' + e.message);
+    console.error(e);
+  }
+}
+
+function loadSelectedSubs(){
+  if(enSubs.length && trSubs.length){
+    tryMatch();
+    setSubStatus(`✓ Eşleştirildi — ${matched.length} satır hazır`);
+    document.getElementById('kline').textContent = '▶ BAŞLAT BUTONUNA BAS';
+  }
+}
+
+function setSubStatus(msg){
+  const el = document.getElementById('sub-status');
+  if(el) el.textContent = msg;
+  else {
+    const container = document.getElementById('sub-results');
+    const d = document.createElement('div');
+    d.className = 'sub-status'; d.id = 'sub-status'; d.textContent = msg;
+    container.prepend(d);
+  }
+}
+
+// Enter key trigger
+document.getElementById('sub-query').addEventListener('keydown', e => {
+  if(e.key === 'Enter') searchSubtitles();
+});
+
+</script>
+</body>
+</html>
