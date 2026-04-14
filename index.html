@@ -102,6 +102,25 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 .stage.tr-active{border-color:rgba(255,45,85,0.3);box-shadow:0 0 30px rgba(255,45,85,0.06),inset 0 0 60px rgba(255,45,85,0.02);}
 .stripe{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--purple),var(--accent3));margin-bottom:24px;}
 
+/* ── TTS MODE TOGGLE ── */
+.mode-row{display:flex;align-items:stretch;gap:0;margin-bottom:12px;border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.mode-btn{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:10px 12px;background:var(--surface);color:var(--muted);cursor:pointer;border:none;border-right:1px solid var(--border);transition:all 0.15s;text-align:center;line-height:1.4;}
+.mode-btn:last-child{border-right:none;}
+.mode-btn:hover{color:var(--text);}
+.mode-btn.active{background:rgba(0,229,255,0.08);color:var(--accent2);border-bottom:2px solid var(--accent2);}
+.mode-badge{display:inline-block;font-size:8px;padding:1px 5px;border-radius:2px;margin-left:4px;vertical-align:middle;}
+.badge-free{background:rgba(0,255,136,0.15);color:var(--green);}
+.badge-paid{background:rgba(255,45,85,0.15);color:var(--accent);}
+
+/* Browser TTS Section */
+.browser-tts-row{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px 16px;margin-bottom:12px;}
+.browser-tts-row h3{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.browser-tts-row .voice-selects{display:flex;gap:8px;flex-wrap:wrap;}
+.browser-tts-row .ctrl-group{flex:1;min-width:180px;}
+.browser-tts-row select{background:var(--bg);color:var(--accent2);border:none;font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;max-width:200px;}
+.no-voice-warn{font-family:var(--mono);font-size:10px;color:var(--accent3);margin-top:8px;display:none;}
+.browser-note{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:8px;line-height:1.6;}
+
 /* ElevenLabs API Key Section */
 .apikey-row{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px 16px;margin-bottom:12px;}
 .apikey-row h3{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
@@ -128,11 +147,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 .api-status.loading{color:var(--accent3);}
 .voice-selects{display:flex;gap:8px;flex-wrap:wrap;}
 .voice-selects .ctrl-group{flex:1;min-width:180px;}
-.voice-selects select{
-  background:var(--bg);color:var(--accent2);border:none;
-  font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;
-  max-width:180px;
-}
+.voice-selects select{background:var(--bg);color:var(--accent2);border:none;font-family:var(--mono);font-size:11px;cursor:pointer;outline:none;max-width:180px;}
 .free-note{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;}
 .free-note a{color:var(--accent2);text-decoration:none;}
 .free-note a:hover{text-decoration:underline;}
@@ -151,7 +166,7 @@ select{background:var(--bg);color:var(--accent2);border:none;font-family:var(--m
   <div class="header">
     <div class="header-left">
       <div class="logo">BREAK<span class="red">ING</span><br><span class="cyan">BAD</span> · KAR<span class="red">AOK</span>E</div>
-      <div class="tagline">// ELEVENLABS MODE · TR → EN · SRT YÜKLEYİN · BAŞLATIN</div>
+      <div class="tagline" id="main-tagline">// TR → EN · SRT YÜKLEYİN · BAŞLATIN</div>
     </div>
     <div class="header-right">
       <div class="bpm-display" id="bpm-disp">LOW</div>
@@ -175,8 +190,45 @@ select{background:var(--bg);color:var(--accent2);border:none;font-family:var(--m
     </label>
   </div>
 
-  <!-- ELEVENLABS API KEY -->
-  <div class="apikey-row">
+  <!-- TTS MODE TOGGLE -->
+  <div class="mode-row">
+    <button class="mode-btn active" id="mode-browser" onclick="setTTSMode('browser')">
+      🌐 TARAYICI TTS<span class="mode-badge badge-free">ÜCRETSİZ</span><br>
+      <span style="font-size:8px;color:var(--muted);">TR+EN · API key gerektirmez</span>
+    </button>
+    <button class="mode-btn" id="mode-hybrid" onclick="setTTSMode('hybrid')">
+      ⚡ HİBRİT<span class="mode-badge badge-free">KARMA</span><br>
+      <span style="font-size:8px;color:var(--muted);">TR=Tarayıcı · EN=ElevenLabs</span>
+    </button>
+    <button class="mode-btn" id="mode-el" onclick="setTTSMode('elevenlabs')">
+      🎙 ELEVENLABS<span class="mode-badge badge-paid">ÜCRETLİ</span><br>
+      <span style="font-size:8px;color:var(--muted);">TR+EN · En kaliteli</span>
+    </button>
+  </div>
+
+  <!-- BROWSER TTS PANEL -->
+  <div class="browser-tts-row" id="panel-browser">
+    <h3>🌐 Tarayıcı TTS — Ücretsiz, API Key Gerektirmez</h3>
+    <div class="voice-selects">
+      <div class="ctrl-group">
+        <span class="ctrl-label">TR SES</span>
+        <select id="tr-voice-browser"></select>
+      </div>
+      <div class="ctrl-group">
+        <span class="ctrl-label">EN SES</span>
+        <select id="en-voice-browser"></select>
+      </div>
+    </div>
+    <div class="no-voice-warn" id="no-voice-warn">⚠ Türkçe ses bulunamadı — Chrome/Edge kullanın veya işletim sistemi TTS dil paketini kurun</div>
+    <div class="browser-note">
+      ✦ Chrome (Windows/Mac): Google Türkçe sesi otomatik gelir &nbsp;|&nbsp;
+      Edge: Microsoft Emel/Deniz sesleri mevcuttur &nbsp;|&nbsp;
+      Kalite ElevenLabs'tan düşük ama tamamen ücretsiz
+    </div>
+  </div>
+
+  <!-- ELEVENLABS API KEY PANEL -->
+  <div class="apikey-row" id="panel-el" style="display:none;">
     <h3>ElevenLabs TTS — Gerçekçi Ses Motoru</h3>
     <div class="apikey-inner">
       <input type="password" class="api-input" id="el-apikey" placeholder="ElevenLabs API Key (sk_...)" autocomplete="off">
@@ -185,13 +237,13 @@ select{background:var(--bg);color:var(--accent2);border:none;font-family:var(--m
     </div>
     <div class="voice-selects" id="voice-selects">
       <div class="ctrl-group">
-        <span class="ctrl-label">TR SES</span>
+        <span class="ctrl-label">TR SES (EL)</span>
         <select id="tr-voice-el">
           <option value="">— key gir —</option>
         </select>
       </div>
       <div class="ctrl-group">
-        <span class="ctrl-label">EN SES</span>
+        <span class="ctrl-label">EN SES (EL)</span>
         <select id="en-voice-el">
           <option value="">— key gir —</option>
         </select>
@@ -234,15 +286,20 @@ select{background:var(--bg);color:var(--accent2);border:none;font-family:var(--m
       <input type="range" id="pulse-sl" min="0" max="1" step="0.05" value="0.18">
       <span class="ctrl-val" id="pulse-v">18%</span>
     </div>
-    <div class="ctrl-group">
+    <div class="ctrl-group" id="stab-group">
       <span class="ctrl-label">STABILITY</span>
       <input type="range" id="stab-sl" min="0" max="1" step="0.05" value="0.45">
       <span class="ctrl-val" id="stab-v">45%</span>
     </div>
-    <div class="ctrl-group">
+    <div class="ctrl-group" id="sim-group">
       <span class="ctrl-label">SIMILARITY</span>
       <input type="range" id="sim-sl" min="0" max="1" step="0.05" value="0.75">
       <span class="ctrl-val" id="sim-v">75%</span>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">TR PİTCH</span>
+      <input type="range" id="tr-pitch" min="0.5" max="2" step="0.1" value="1.0">
+      <span class="ctrl-val" id="tr-pitch-v">1.0</span>
     </div>
     <div class="ctrl-group">
       <span class="ctrl-label">MOOD</span>
@@ -284,11 +341,11 @@ select{background:var(--bg);color:var(--accent2);border:none;font-family:var(--m
     <div class="stage-noise"></div>
     <div class="stage-corner tl" id="sc-tl">SRC</div>
     <div class="stage-corner tr" id="sc-tr">00:00:00</div>
-    <div class="stage-corner bl">KARAOKE · BB · ELEVENLABS</div>
+    <div class="stage-corner bl">KARAOKE · BB</div>
     <div class="stage-corner br" id="sc-br">READY</div>
     <div class="stage-inner">
       <div class="lang-badge tr-badge" id="lang-badge"><span class="lang-dot"></span>TR</div>
-      <div class="kline" id="kline">SRT DOSYASI YÜKLE · API KEY GİR · BAŞLAT</div>
+      <div class="kline" id="kline">SRT DOSYASI YÜKLE · MOD SEÇ · BAŞLAT</div>
       <div class="sub-line" id="sub-line"></div>
     </div>
   </div>
@@ -304,7 +361,7 @@ select{background:var(--bg);color:var(--accent2);border:none;font-family:var(--m
   <!-- INFO -->
   <div class="info-row">
     <span class="info-counter" id="counter">—</span>
-    <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;">ELEVENLABS · ÖNCE TR · SONRA EN</span>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;" id="mode-info-label">TARAYICI TTS · ÖNCE TR · SONRA EN</span>
   </div>
 </div>
 
@@ -315,11 +372,147 @@ let currentFilter='all';
 let currentIdx=-1,playing=false;
 let audioCtx=null,masterGain=null,padNodes=[],pingTimer=null,vizAnimId=null,lightInterval=null;
 let vizBars=[];
-// Audio cache: key = "lang:text", value = ArrayBuffer
 let audioCache = new Map();
-// Prefetch queue
-let prefetchQueue = [];
-let isPrefetching = false;
+let ttsMode = 'browser'; // 'browser' | 'hybrid' | 'elevenlabs'
+
+// ── TTS MODE ──────────────────────────────────────────────────────────────
+function setTTSMode(mode){
+  ttsMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mode-'+mode).classList.add('active');
+
+  document.getElementById('panel-browser').style.display = (mode==='browser') ? '' : 'none';
+  document.getElementById('panel-el').style.display = (mode==='elevenlabs' || mode==='hybrid') ? '' : 'none';
+
+  // EL-only controls visibility
+  const elOnly = mode === 'elevenlabs';
+  const needsEL = mode === 'elevenlabs' || mode === 'hybrid';
+  document.getElementById('stab-group').style.display = needsEL ? '' : 'none';
+  document.getElementById('sim-group').style.display = needsEL ? '' : 'none';
+
+  // Update EL panel header text for hybrid
+  if(mode==='hybrid'){
+    document.querySelector('#panel-el h3').textContent = 'ElevenLabs — Sadece EN Sesi İçin';
+    document.getElementById('tr-voice-el').closest('.ctrl-group').style.display='none';
+  } else if(mode==='elevenlabs'){
+    document.querySelector('#panel-el h3').textContent = 'ElevenLabs TTS — Gerçekçi Ses Motoru';
+    document.getElementById('tr-voice-el').closest('.ctrl-group').style.display='';
+  }
+
+  const labels = {
+    browser:'TARAYICI TTS · ÜCRETSİZ · TR+EN',
+    hybrid:'HİBRİT · TR=TARAYICI · EN=ELEVENLABS',
+    elevenlabs:'ELEVENLABS · ÖNCE TR · SONRA EN'
+  };
+  document.getElementById('mode-info-label').textContent = labels[mode]||'';
+  document.getElementById('main-tagline').textContent = mode==='browser'
+    ? '// TARAYICI TTS · ÜCRETSİZ · SRT YÜKLEYİN'
+    : mode==='hybrid'
+      ? '// HİBRİT MOD · TR=ÜCRETSIZ · EN=ELEVENLABS'
+      : '// ELEVENLABS MODE · TR → EN · SRT YÜKLEYİN';
+
+  audioCache.clear();
+}
+
+// ── BROWSER TTS VOICES ────────────────────────────────────────────────────
+let browserVoices = [];
+let browserTRVoices = [];
+let browserENVoices = [];
+
+function loadBrowserVoices(){
+  browserVoices = window.speechSynthesis.getVoices();
+  if(!browserVoices.length) return;
+
+  browserTRVoices = browserVoices.filter(v=>v.lang.startsWith('tr'));
+  browserENVoices = browserVoices.filter(v=>v.lang.startsWith('en'));
+
+  const trSel = document.getElementById('tr-voice-browser');
+  const enSel = document.getElementById('en-voice-browser');
+  trSel.innerHTML='';enSel.innerHTML='';
+
+  if(browserTRVoices.length===0){
+    const o=document.createElement('option');o.value='';o.textContent='— Türkçe ses yok —';
+    trSel.appendChild(o);
+    document.getElementById('no-voice-warn').style.display='block';
+  } else {
+    document.getElementById('no-voice-warn').style.display='none';
+    browserTRVoices.forEach((v,i)=>{
+      const o=document.createElement('option');o.value=i;
+      o.textContent=v.name+' ('+v.lang+')';
+      trSel.appendChild(o);
+    });
+    // Prefer Microsoft Emel or any named Turkish voice
+    const emel = browserTRVoices.findIndex(v=>v.name.toLowerCase().includes('emel')||v.name.toLowerCase().includes('deniz'));
+    if(emel>=0) trSel.value=emel;
+  }
+
+  if(browserENVoices.length===0){
+    const o=document.createElement('option');o.value='';o.textContent='— EN ses yok —';
+    enSel.appendChild(o);
+  } else {
+    browserENVoices.forEach((v,i)=>{
+      const o=document.createElement('option');o.value=i;
+      o.textContent=v.name+' ('+v.lang+')';
+      enSel.appendChild(o);
+    });
+    // Prefer a decent EN voice
+    const preferred=['google uk english female','google us english','microsoft david','microsoft zira','microsoft mark'];
+    const pi=browserENVoices.findIndex(v=>preferred.some(p=>v.name.toLowerCase().includes(p.split(' ').pop())));
+    if(pi>=0) enSel.value=pi;
+  }
+}
+
+if(window.speechSynthesis){
+  loadBrowserVoices();
+  window.speechSynthesis.onvoiceschanged = loadBrowserVoices;
+}
+
+// ── BROWSER TTS SPEAK ─────────────────────────────────────────────────────
+function speakBrowser(text, lang, speed, pitch){
+  return new Promise((res,rej)=>{
+    if(!playing){res();return;}
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = lang==='tr' ? 'tr-TR' : 'en-US';
+    utt.rate = speed||1.0;
+    utt.pitch = pitch||1.0;
+    utt.volume = 1.0;
+
+    // Pick voice
+    if(lang==='tr'){
+      const idx=parseInt(document.getElementById('tr-voice-browser').value);
+      if(browserTRVoices[idx]) utt.voice=browserTRVoices[idx];
+    } else {
+      const idx=parseInt(document.getElementById('en-voice-browser').value);
+      if(browserENVoices[idx]) utt.voice=browserENVoices[idx];
+    }
+
+    const words = text.split(/\s+/);
+    // Word-by-word highlight via boundary event
+    let wordIdx=0;
+    utt.onboundary = (e)=>{
+      if(e.name==='word'){
+        const el=document.getElementById('w'+wordIdx);
+        if(el){
+          if(wordIdx>0){const p=document.getElementById('w'+(wordIdx-1));if(p){p.classList.remove('lit');p.classList.add('done');}}
+          el.classList.add('lit');
+        }
+        wordIdx++;
+      }
+    };
+    utt.onend=()=>{
+      // Mark all done
+      for(let i=0;i<words.length;i++){const el=document.getElementById('w'+i);if(el){el.classList.remove('lit');el.classList.add('done');}}
+      res();
+    };
+    utt.onerror=(e)=>{
+      if(e.error==='interrupted'||e.error==='canceled') res();
+      else rej(new Error('SpeechSynthesis: '+e.error));
+    };
+
+    window.speechSynthesis.speak(utt);
+  });
+}
 
 // ── VIZ ──────────────────────────────────────────────────────────────────
 function setupViz(){
@@ -542,36 +735,27 @@ function applyFilter(){
 }
 
 // ── ELEVENLABS API ────────────────────────────────────────────────────────
-
-function getAPIKey(){
-  return document.getElementById('el-apikey').value.trim();
-}
+function getAPIKey(){return document.getElementById('el-apikey').value.trim();}
 
 async function testAPIKey(){
   const key=getAPIKey();
   if(!key){setAPIStatus('KEY GEREKLİ','');return;}
   setAPIStatus('TEST EDİLİYOR…','loading');
   try{
-    const r=await fetch('https://api.elevenlabs.io/v1/voices',{
-      headers:{'xi-api-key':key}
-    });
+    const r=await fetch('https://api.elevenlabs.io/v1/voices',{headers:{'xi-api-key':key}});
     if(!r.ok) throw new Error('HTTP '+r.status);
     const data=await r.json();
     setAPIStatus('✓ BAĞLANTI OK','ok');
-    populateVoices(data.voices||[]);
-    audioCache.clear(); // reset cache on new key
-  }catch(err){
-    setAPIStatus('✗ '+err.message,'err');
-  }
+    populateELVoices(data.voices||[]);
+    audioCache.clear();
+  }catch(err){setAPIStatus('✗ '+err.message,'err');}
 }
-
 function setAPIStatus(msg,cls){
   const el=document.getElementById('api-status');
   el.textContent=msg;
   el.className='api-status'+(cls?' '+cls:'');
 }
 
-// Known good voices for TR and EN
 const KNOWN_TR_VOICES=[
   {name:'Rachel (Multilingual)',id:'21m00Tcm4TlvDq8ikWAM'},
   {name:'Matilda',id:'XrExE9yKIg1WjnnlVkGX'},
@@ -586,67 +770,28 @@ const KNOWN_EN_VOICES=[
   {name:'Charlie',id:'IKne3meq5aSn9XLyUdCD'},
   {name:'Clyde',id:'2EiwWnXFnvU5JabPnv8n'},
   {name:'Daniel',id:'onwK4e9ZLuTAKqWW03F9'},
-  {name:'Dave',id:'CYw3kZ02Hs0563khs1Fj'},
-  {name:'Ethan',id:'g5CIjZEefAph4nQFvHAz'},
-  {name:'Freya',id:'jsCqWAovK2LkecY7zXl4'},
   {name:'George',id:'JBFqnCBsd6RMkjVDRZzb'},
-  {name:'Harry',id:'SOYHLrjzK2X1ezoPC6cr'},
-  {name:'James',id:'ZQe5CZNOzWyzPSCn5a3c'},
-  {name:'Jeremy',id:'bVMeCyTHy58xNoL34h3p'},
-  {name:'Jessie',id:'t0jbNlBVZ17f02VDIeMI'},
-  {name:'Joseph',id:'Zlb1dXrM653N07WRdFW3'},
   {name:'Josh',id:'TxGEqnHWrfWFTfGW9XjX'},
   {name:'Liam',id:'TX3LPaxmHKxFdv7VOQHJ'},
-  {name:'Lily',id:'pFZP5JQG7iQjIQuC4Bku'},
-  {name:'Michael',id:'flq6f7yk4E4fJM5XTYuZ'},
-  {name:'Mimi',id:'zrHiDhphv9ZnVXBqCLjz'},
-  {name:'Nicole',id:'piTKgcLEGmPE4e6mEKli'},
-  {name:'Patrick',id:'ODq5zmih8GrVes37Dizd'},
   {name:'Rachel',id:'21m00Tcm4TlvDq8ikWAM'},
-  {name:'Ryan (Audiobook)',id:'wViXBPUzp2ZZixB1xQuM'},
   {name:'Sam',id:'yoZ06aMxZJJ28mfd3POQ'},
-  {name:'Serena',id:'pMsXgVXv3BLzUgSXRplE'},
-  {name:'Thomas',id:'GBv7mTt0atIp3Br8iCZE'},
 ];
 
-function populateVoices(apiVoices){
-  // Merge API voices with known list
+function populateELVoices(apiVoices){
   const trSel=document.getElementById('tr-voice-el');
   const enSel=document.getElementById('en-voice-el');
   trSel.innerHTML='';enSel.innerHTML='';
-
-  // For TR: use multilingual voices — prefer voices that support Turkish
-  const trList=[
-    ...KNOWN_TR_VOICES,
-    ...apiVoices.filter(v=>v.fine_tuning&&v.fine_tuning.language==='tr').map(v=>({name:v.name+' (custom)',id:v.voice_id}))
-  ];
-  // Deduplicate
   const seenTR=new Set();
-  trList.forEach(v=>{
-    if(!seenTR.has(v.id)){seenTR.add(v.id);
-      const o=document.createElement('option');o.value=v.id;o.textContent=v.name;
-      trSel.appendChild(o);}
-  });
-  // Add any from API not already listed
-  apiVoices.forEach(v=>{
-    if(!seenTR.has(v.voice_id)){seenTR.add(v.voice_id);
-      const o=document.createElement('option');o.value=v.voice_id;o.textContent=v.name+' (hesabım)';
-      trSel.appendChild(o);}
-  });
-  trSel.value='21m00Tcm4TlvDq8ikWAM'; // Rachel default
-
-  // For EN
+  [...KNOWN_TR_VOICES,...apiVoices.filter(v=>v.fine_tuning&&v.fine_tuning.language==='tr').map(v=>({name:v.name+' (custom)',id:v.voice_id}))]
+    .forEach(v=>{if(!seenTR.has(v.id)){seenTR.add(v.id);const o=document.createElement('option');o.value=v.id;o.textContent=v.name;trSel.appendChild(o);}});
+  apiVoices.forEach(v=>{if(!seenTR.has(v.voice_id)){seenTR.add(v.voice_id);const o=document.createElement('option');o.value=v.voice_id;o.textContent=v.name+' (hesabım)';trSel.appendChild(o);}});
+  trSel.value='21m00Tcm4TlvDq8ikWAM';
   const seenEN=new Set();
-  [...KNOWN_EN_VOICES,...apiVoices.map(v=>({name:v.name,id:v.voice_id}))].forEach(v=>{
-    if(!seenEN.has(v.id)){seenEN.add(v.id);
-      const o=document.createElement('option');o.value=v.id;o.textContent=v.name;
-      enSel.appendChild(o);}
-  });
-  enSel.value='pNInz6obpgDQGcFmaJgB'; // Adam default
+  [...KNOWN_EN_VOICES,...apiVoices.map(v=>({name:v.name,id:v.voice_id}))].forEach(v=>{if(!seenEN.has(v.id)){seenEN.add(v.id);const o=document.createElement('option');o.value=v.id;o.textContent=v.name;enSel.appendChild(o);}});
+  enSel.value='pNInz6obpgDQGcFmaJgB';
 }
 
-// Pre-populate with known voices so user can pick even before testing
-(function initVoices(){
+(function initELVoices(){
   const trSel=document.getElementById('tr-voice-el');
   const enSel=document.getElementById('en-voice-el');
   trSel.innerHTML='';enSel.innerHTML='';
@@ -656,6 +801,9 @@ function populateVoices(apiVoices){
   enSel.value='pNInz6obpgDQGcFmaJgB';
 })();
 
+// Init mode UI (hide EL-specific panels)
+setTTSMode('browser');
+
 // ── ELEVENLABS TTS CALL ───────────────────────────────────────────────────
 async function fetchElevenLabsAudio(text, voiceId){
   const key=getAPIKey();
@@ -663,39 +811,20 @@ async function fetchElevenLabsAudio(text, voiceId){
   const model=document.getElementById('el-model').value;
   const stability=parseFloat(document.getElementById('stab-sl').value);
   const similarity=parseFloat(document.getElementById('sim-sl').value);
-
-  const body={
-    text,
-    model_id:model,
-    voice_settings:{
-      stability,
-      similarity_boost:similarity,
-      style:0.0,
-      use_speaker_boost:true
-    }
-  };
-
+  const body={text,model_id:model,voice_settings:{stability,similarity_boost:similarity,style:0.0,use_speaker_boost:true}};
   const r=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,{
     method:'POST',
-    headers:{
-      'xi-api-key':key,
-      'Content-Type':'application/json',
-      'Accept':'audio/mpeg'
-    },
+    headers:{'xi-api-key':key,'Content-Type':'application/json','Accept':'audio/mpeg'},
     body:JSON.stringify(body)
   });
-  if(!r.ok){
-    const errText=await r.text().catch(()=>'');
-    throw new Error(`ElevenLabs ${r.status}: ${errText.slice(0,80)}`);
-  }
+  if(!r.ok){const errText=await r.text().catch(()=>'');throw new Error(`ElevenLabs ${r.status}: ${errText.slice(0,80)}`);}
   return await r.arrayBuffer();
 }
 
-// ── PLAY AUDIO BUFFER VIA WEB AUDIO ──────────────────────────────────────
 let currentSource=null;
-
 function stopCurrentAudio(){
   if(currentSource){try{currentSource.stop();}catch(e){}currentSource=null;}
+  window.speechSynthesis&&window.speechSynthesis.cancel();
 }
 
 async function playAudioBuffer(arrayBuffer){
@@ -704,13 +833,9 @@ async function playAudioBuffer(arrayBuffer){
     const ctx=getCtx();
     try{
       const decoded=await ctx.decodeAudioData(arrayBuffer.slice(0));
-      const src=ctx.createBufferSource();
-      src.buffer=decoded;
-      // Connect through a gain node for volume isolation from masterGain
-      const speechGain=ctx.createGain();
-      speechGain.gain.value=1.0;
-      src.connect(speechGain);
-      speechGain.connect(ctx.destination);
+      const src=ctx.createBufferSource();src.buffer=decoded;
+      const speechGain=ctx.createGain();speechGain.gain.value=1.0;
+      src.connect(speechGain);speechGain.connect(ctx.destination);
       currentSource=src;
       src.onended=()=>{currentSource=null;res();};
       src.start();
@@ -736,26 +861,22 @@ function animateWords(words, durationMs){
     if(wIdx<words.length) setTimeout(tick,avgMs);
   }
   tick();
-  setTimeout(()=>{
-    for(let i=0;i<words.length;i++){const el=document.getElementById('w'+i);if(el){el.classList.remove('lit');el.classList.add('done');}}
-  },durationMs+100);
+  setTimeout(()=>{for(let i=0;i<words.length;i++){const el=document.getElementById('w'+i);if(el){el.classList.remove('lit');el.classList.add('done');}}},durationMs+100);
 }
 
-// ── SPEAK WITH ELEVENLABS ────────────────────────────────────────────────
+// ── UNIFIED SPEAK ─────────────────────────────────────────────────────────
+function setStageStatus(msg,col){const el=document.getElementById('sc-br');if(el){el.textContent=msg;el.style.color=col||'';}}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
 async function speakEL(text, voiceId, speed, lang){
   if(!playing) return;
   setStageStatus(lang==='tr'?'▶ TR ÇALIYOR':'▶ EN ÇALIYOR', lang==='tr'?'var(--accent)':'var(--accent2)');
   setAPIStatus(lang==='tr'?'TTS: TR…':'TTS: EN…','loading');
-
   const cacheKey=`${voiceId}:${text}`;
   let buf;
   try{
-    if(audioCache.has(cacheKey)){
-      buf=audioCache.get(cacheKey);
-    } else {
-      buf=await fetchElevenLabsAudio(text, voiceId);
-      audioCache.set(cacheKey,buf);
-    }
+    if(audioCache.has(cacheKey)){buf=audioCache.get(cacheKey);}
+    else{buf=await fetchElevenLabsAudio(text,voiceId);audioCache.set(cacheKey,buf);}
     setAPIStatus('✓ ÇALIYOR','ok');
     const words=text.split(/\s+/);
     const ctx=getCtx();
@@ -771,30 +892,34 @@ async function speakEL(text, voiceId, speed, lang){
   if(playing) setAPIStatus('✓ HAZIR','ok');
 }
 
-function setStageStatus(msg,col){
-  const el=document.getElementById('sc-br');
-  if(el){el.textContent=msg;el.style.color=col||'';}
-}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+async function speakAny(text, lang){
+  if(!playing) return;
+  const trSpeed=parseFloat(document.getElementById('tr-spd').value);
+  const enSpeed=parseFloat(document.getElementById('en-spd').value);
+  const trPitch=parseFloat(document.getElementById('tr-pitch').value);
+  const speed=lang==='tr'?trSpeed:enSpeed;
 
-// ── PREFETCH NEXT ROW ─────────────────────────────────────────────────────
-async function prefetchRow(i){
-  if(i<0||i>=filtered.length) return;
-  const row=filtered[i];
-  const key=getAPIKey();if(!key) return;
-  const trVoice=document.getElementById('tr-voice-el').value;
-  const enVoice=document.getElementById('en-voice-el').value;
-  const tryPrefetch=async(text,voiceId)=>{
-    if(!text||!voiceId) return;
-    const k=`${voiceId}:${text}`;
-    if(audioCache.has(k)) return;
-    try{
-      const buf=await fetchElevenLabsAudio(text,voiceId);
-      audioCache.set(k,buf);
-    }catch(e){/* silent */}
-  };
-  if(row.tr) await tryPrefetch(row.tr,trVoice);
-  await tryPrefetch(row.en,enVoice);
+  if(ttsMode==='browser'){
+    setStageStatus(lang==='tr'?'▶ TR [BROWSER]':'▶ EN [BROWSER]', lang==='tr'?'var(--accent)':'var(--accent2)');
+    document.getElementById('kline').innerHTML=buildWordSpans(text);
+    await speakBrowser(text, lang, speed, lang==='tr'?trPitch:1.0);
+  } else if(ttsMode==='hybrid'){
+    if(lang==='tr'){
+      setStageStatus('▶ TR [BROWSER]','var(--accent)');
+      document.getElementById('kline').innerHTML=buildWordSpans(text);
+      await speakBrowser(text,'tr',speed,trPitch);
+    } else {
+      const enVoice=document.getElementById('en-voice-el').value;
+      document.getElementById('kline').innerHTML=buildWordSpans(text);
+      await speakEL(text, enVoice, speed, 'en');
+    }
+  } else { // elevenlabs
+    const trVoice=document.getElementById('tr-voice-el').value;
+    const enVoice=document.getElementById('en-voice-el').value;
+    const voiceId=lang==='tr'?trVoice:enVoice;
+    document.getElementById('kline').innerHTML=buildWordSpans(text);
+    await speakEL(text, voiceId, speed, lang);
+  }
 }
 
 // ── PLAY ROW ─────────────────────────────────────────────────────────────
@@ -807,12 +932,6 @@ async function playRow(i){
   const subLine=document.getElementById('sub-line');
   const badge=document.getElementById('lang-badge');
   const scTr=document.getElementById('sc-tr');
-
-  const trVoice=document.getElementById('tr-voice-el').value;
-  const enVoice=document.getElementById('en-voice-el').value;
-  const trSpeed=parseFloat(document.getElementById('tr-spd').value);
-  const enSpeed=parseFloat(document.getElementById('en-spd').value);
-
   scTr.textContent=row.time||'--:--:--';
   setStageStatus((i+1)+'/'+filtered.length,'');
 
@@ -823,7 +942,7 @@ async function playRow(i){
   kline.innerHTML=buildWordSpans(row.tr||'—');
   subLine.className='sub-line';subLine.textContent='';
 
-  if(row.tr) await speakEL(row.tr,trVoice,trSpeed,'tr');
+  if(row.tr) await speakAny(row.tr,'tr');
   if(!playing) return;
   await sleep(200);if(!playing) return;
 
@@ -834,27 +953,23 @@ async function playRow(i){
   kline.innerHTML=buildWordSpans(row.en);
   subLine.className='sub-line show';subLine.textContent=row.tr||'';
 
-  await speakEL(row.en,enVoice,enSpeed,'en');
+  await speakAny(row.en,'en');
   if(!playing) return;
   await sleep(250);if(!playing) return;
 
   stage.className='stage';
-
-  // Prefetch next row in background
-  prefetchRow(i+1).catch(()=>{});
-
   playRow(i+1);
 }
 
 // ── TRANSPORT ──────────────────────────────────────────────────────────────
 function togglePlay(){
   if(playing){pausePlay();return;}
-  if(!getAPIKey()){
-    document.getElementById('el-apikey').focus();
-    setAPIStatus('⚠ API KEY GEREKLİ','err');
-    return;
+  if((ttsMode==='elevenlabs'||ttsMode==='hybrid')&&!getAPIKey()){
+    if(ttsMode==='elevenlabs'){document.getElementById('el-apikey').focus();setAPIStatus('⚠ API KEY GEREKLİ','err');return;}
+    // hybrid: only needs key for EN, ok to proceed with warning
   }
-  getCtx().resume();
+  if(ttsMode==='browser'||ttsMode==='hybrid') getCtx().resume();
+  else getCtx().resume();
   playing=true;startBeat();
   document.getElementById('btn-play').textContent='⏸ DURAKLAT';
   document.getElementById('btn-play').classList.add('active');
@@ -872,7 +987,7 @@ function fullStop(){
   currentIdx=-1;
   document.getElementById('btn-play').textContent='▶ BAŞLAT';
   document.getElementById('btn-play').classList.remove('active');
-  document.getElementById('kline').textContent='SRT DOSYASI YÜKLE · API KEY GİR · BAŞLAT';
+  document.getElementById('kline').textContent='SRT DOSYASI YÜKLE · MOD SEÇ · BAŞLAT';
   document.getElementById('sub-line').textContent='';
   document.getElementById('sub-line').className='sub-line';
   document.getElementById('lang-badge').innerHTML='<span class="lang-dot"></span>TR';
@@ -884,7 +999,7 @@ function fullStop(){
 function stepBy(d){
   const ni=currentIdx+d;
   if(ni<0||ni>=filtered.length) return;
-  if(!getAPIKey()){setAPIStatus('⚠ API KEY GEREKLİ','err');return;}
+  if((ttsMode==='elevenlabs')&&!getAPIKey()){setAPIStatus('⚠ API KEY GEREKLİ','err');return;}
   playing=true;stopCurrentAudio();
   if(!padNodes.length) startBeat();
   document.getElementById('btn-play').textContent='⏸ DURAKLAT';
@@ -905,6 +1020,7 @@ function updateUI(){
 // ── SLIDERS ───────────────────────────────────────────────────────────────
 document.getElementById('tr-spd').addEventListener('input',function(){document.getElementById('tr-spd-v').textContent=parseFloat(this.value).toFixed(2)+'×';});
 document.getElementById('en-spd').addEventListener('input',function(){document.getElementById('en-spd-v').textContent=parseFloat(this.value).toFixed(2)+'×';});
+document.getElementById('tr-pitch').addEventListener('input',function(){document.getElementById('tr-pitch-v').textContent=parseFloat(this.value).toFixed(1);});
 document.getElementById('vol-sl').addEventListener('input',function(){
   document.getElementById('vol-v').textContent=Math.round(this.value*100)+'%';
   if(masterGain) masterGain.gain.value=parseFloat(this.value);
@@ -916,7 +1032,6 @@ document.getElementById('mood-sl').addEventListener('change',function(){
   document.getElementById('bpm-disp').textContent=this.value.toUpperCase();
   if(playing){stopAtmosphere();startAtmosphere();}
 });
-// Voice changes clear relevant cache entries
 document.getElementById('tr-voice-el').addEventListener('change',()=>audioCache.clear());
 document.getElementById('en-voice-el').addEventListener('change',()=>audioCache.clear());
 document.getElementById('el-model').addEventListener('change',()=>audioCache.clear());
@@ -925,8 +1040,6 @@ window.addEventListener('load',()=>{
   document.getElementById('en-spd-v').textContent=parseFloat(document.getElementById('en-spd').value).toFixed(2)+'×';
   document.getElementById('tr-spd-v').textContent=parseFloat(document.getElementById('tr-spd').value).toFixed(2)+'×';
 });
-
-// Enter key on API key input triggers test
 document.getElementById('el-apikey').addEventListener('keydown',e=>{if(e.key==='Enter') testAPIKey();});
 </script>
 </body>
